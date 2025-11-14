@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import '../controllers/crud_services.dart';
 
 class AddContactPage extends StatefulWidget {
@@ -21,11 +22,7 @@ class _AddContactPageState extends State<AddContactPage> {
   final _whatsappController = TextEditingController();
   final _telephoneFixeController = TextEditingController();
   final _autreNumeroController = TextEditingController();
-  final _langueController = TextEditingController();
-  final _nationaliteController = TextEditingController();
   final _numeroChambreController = TextEditingController();
-  final _canalReservationController = TextEditingController();
-  final _historiqueSejourController = TextEditingController();
   final _pointsPositifsController = TextEditingController();
   final _pointsNegatifsController = TextEditingController();
 
@@ -36,8 +33,125 @@ class _AddContactPageState extends State<AddContactPage> {
 
   // Dropdown values
   String _sexe = 'Homme';
+  String _langue = 'Français';
+  String? _nationalite;
+  String? _canalReservation;
+  String _historiqueSejour = 'Nouveau client';
   String _statutAppel = 'Non appelé';
-  int _degreSatisfaction = 5;
+  int _degreSatisfaction = 0;
+  bool _satisfactionSet = false;
+
+  // List of languages
+  final List<String> _langues = [
+    'Arabe',
+    'Anglais',
+    'Allemand',
+    'Français',
+    'Italien',
+    'Espagnol',
+    'Russe',
+    'Turc',
+    'Polonais',
+    'Néerlandais',
+    'Ukrainien',
+    'Roumain',
+    'Portugais',
+    'Grec',
+    'Tchèque',
+    'Hongrois',
+    'Suédois',
+    'Serbo-croate',
+    'Bulgare',
+    'Danois',
+    'Finnois',
+    'Slovaque',
+    'Norvégien',
+    'Lituanien',
+    'Letton',
+    'Slovène',
+    'Estonien',
+    'Albanais',
+    'Macédonien',
+    'Catalan',
+    'Biélorusse',
+  ];
+
+  // List of nationalities
+  final List<String> _nationalites = [
+    'Tunisie',
+    'Algérie',
+    'Maroc',
+    'Libye',
+    'Albanie',
+    'Allemagne',
+    'Andorre',
+    'Arménie',
+    'Autriche',
+    'Azerbaïdjan',
+    'Belgique',
+    'Biélorussie',
+    'Bosnie-Herzégovine',
+    'Bulgarie',
+    'Chypre',
+    'Croatie',
+    'Danemark',
+    'Espagne',
+    'Estonie',
+    'Finlande',
+    'France',
+    'Géorgie',
+    'Grèce',
+    'Hongrie',
+    'Irlande',
+    'Islande',
+    'Italie',
+    'Kazakhstan',
+    'Kosovo',
+    'Lettonie',
+    'Liechtenstein',
+    'Lituanie',
+    'Luxembourg',
+    'Malte',
+    'Moldavie',
+    'Monaco',
+    'Monténégro',
+    'Norvège',
+    'Pays-Bas',
+    'Pologne',
+    'Portugal',
+    'République tchèque',
+    'Roumanie',
+    'Royaume-Uni',
+    'Russie',
+    'Saint-Marin',
+    'Serbie',
+    'Slovaquie',
+    'Slovénie',
+    'Suède',
+    'Suisse',
+    'Ukraine',
+    'Monde arabe',
+    'Amérique du Sud',
+    'Canada',
+    'États-Unis',
+    'Asie',
+    'Australie',
+    'Afrique subsaharienne',
+    'Autre',
+  ];
+
+  // List of reservation channels
+  final List<String> _canalsReservation = [
+    'OTS',
+    'Easy Jet Holidays',
+    'Mondial Tourism',
+    'Autre TO',
+    'Booking.com',
+    'Expedia',
+    'Autre OTA',
+    'Agence Local',
+    'Indiv',
+  ];
 
   @override
   void dispose() {
@@ -47,11 +161,7 @@ class _AddContactPageState extends State<AddContactPage> {
     _whatsappController.dispose();
     _telephoneFixeController.dispose();
     _autreNumeroController.dispose();
-    _langueController.dispose();
-    _nationaliteController.dispose();
     _numeroChambreController.dispose();
-    _canalReservationController.dispose();
-    _historiqueSejourController.dispose();
     _pointsPositifsController.dispose();
     _pointsNegatifsController.dispose();
     super.dispose();
@@ -86,6 +196,40 @@ class _AddContactPageState extends State<AddContactPage> {
         return;
       }
 
+      if (!_satisfactionSet) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Veuillez définir le degré de satisfaction'),
+          ),
+        );
+        return;
+      }
+
+      if (_canalReservation == null || _canalReservation!.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Veuillez sélectionner un canal de réservation'),
+          ),
+        );
+        return;
+      }
+
+      if (_nationalite == null || _nationalite!.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Veuillez sélectionner une nationalité'),
+          ),
+        );
+        return;
+      }
+
+      if (_numeroChambreController.text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Veuillez entrer le numéro de chambre')),
+        );
+        return;
+      }
+
       String result = await _crudServices.addNewContact(
         nom: _nomController.text,
         prenom: _prenomController.text,
@@ -94,14 +238,14 @@ class _AddContactPageState extends State<AddContactPage> {
         telephoneFixe: _telephoneFixeController.text,
         autreNumero: _autreNumeroController.text,
         dateNaissance: Timestamp.fromDate(_dateNaissance!),
-        langue: _langueController.text,
+        langue: _langue,
         sexe: _sexe,
-        nationalite: _nationaliteController.text,
+        nationalite: _nationalite ?? '',
         dateArrivee: Timestamp.fromDate(_dateArrivee!),
         dateDepart: Timestamp.fromDate(_dateDepart!),
         numeroChambre: _numeroChambreController.text,
-        canalReservation: _canalReservationController.text,
-        historiqueSejour: _historiqueSejourController.text,
+        canalReservation: _canalReservation ?? '',
+        historiqueSejour: _historiqueSejour,
         degreSatisfaction: _degreSatisfaction,
         pointsPositifs: _pointsPositifsController.text,
         pointsNegatifs: _pointsNegatifsController.text,
@@ -225,13 +369,20 @@ class _AddContactPageState extends State<AddContactPage> {
               const SizedBox(height: 16),
 
               // Langue
-              TextFormField(
-                controller: _langueController,
+              DropdownButtonFormField<String>(
+                value: _langue,
                 decoration: InputDecoration(
                   labelText: 'Langue',
                   labelStyle: GoogleFonts.sora(),
                   border: const OutlineInputBorder(),
                 ),
+                items: _langues
+                    .map(
+                      (langue) =>
+                          DropdownMenuItem(value: langue, child: Text(langue)),
+                    )
+                    .toList(),
+                onChanged: (value) => setState(() => _langue = value!),
               ),
               const SizedBox(height: 16),
 
@@ -243,7 +394,7 @@ class _AddContactPageState extends State<AddContactPage> {
                   labelStyle: GoogleFonts.sora(),
                   border: const OutlineInputBorder(),
                 ),
-                items: ['Homme', 'Femme', 'Autre']
+                items: ['Homme', 'Femme']
                     .map(
                       (sexe) =>
                           DropdownMenuItem(value: sexe, child: Text(sexe)),
@@ -254,13 +405,29 @@ class _AddContactPageState extends State<AddContactPage> {
               const SizedBox(height: 16),
 
               // Nationalité
-              TextFormField(
-                controller: _nationaliteController,
-                decoration: InputDecoration(
-                  labelText: 'Nationalité',
-                  labelStyle: GoogleFonts.sora(),
-                  border: const OutlineInputBorder(),
+              DropdownSearch<String>(
+                items: (filter, infiniteScrollProps) => _nationalites,
+                popupProps: PopupProps.menu(
+                  showSearchBox: true,
+                  searchFieldProps: TextFieldProps(
+                    decoration: InputDecoration(
+                      labelText: 'Rechercher...',
+                      labelStyle: GoogleFonts.sora(),
+                      prefixIcon: const Icon(Icons.search),
+                      border: const OutlineInputBorder(),
+                    ),
+                  ),
+                  constraints: const BoxConstraints(maxHeight: 400),
                 ),
+                decoratorProps: DropDownDecoratorProps(
+                  decoration: InputDecoration(
+                    labelText: 'Nationalité *',
+                    labelStyle: GoogleFonts.sora(),
+                    border: const OutlineInputBorder(),
+                  ),
+                ),
+                selectedItem: _nationalite,
+                onChanged: (value) => setState(() => _nationalite = value),
               ),
               const SizedBox(height: 16),
 
@@ -302,33 +469,59 @@ class _AddContactPageState extends State<AddContactPage> {
               TextFormField(
                 controller: _numeroChambreController,
                 decoration: InputDecoration(
-                  labelText: 'Numéro de Chambre',
+                  labelText: 'Numéro de Chambre *',
                   labelStyle: GoogleFonts.sora(),
                   border: const OutlineInputBorder(),
                 ),
+                validator: (value) => value!.isEmpty ? 'Requis' : null,
               ),
               const SizedBox(height: 16),
 
               // Canal Réservation
-              TextFormField(
-                controller: _canalReservationController,
-                decoration: InputDecoration(
-                  labelText: 'Canal de Réservation',
-                  labelStyle: GoogleFonts.sora(),
-                  border: const OutlineInputBorder(),
+              DropdownSearch<String>(
+                items: (filter, infiniteScrollProps) => _canalsReservation,
+                popupProps: PopupProps.menu(
+                  showSearchBox: true,
+                  searchFieldProps: TextFieldProps(
+                    decoration: InputDecoration(
+                      labelText: 'Rechercher...',
+                      labelStyle: GoogleFonts.sora(),
+                      prefixIcon: const Icon(Icons.search),
+                      border: const OutlineInputBorder(),
+                    ),
+                  ),
+                  constraints: const BoxConstraints(maxHeight: 300),
                 ),
+                decoratorProps: DropDownDecoratorProps(
+                  decoration: InputDecoration(
+                    labelText: 'Canal de Réservation *',
+                    labelStyle: GoogleFonts.sora(),
+                    border: const OutlineInputBorder(),
+                  ),
+                ),
+                selectedItem: _canalReservation,
+                onChanged: (value) => setState(() => _canalReservation = value),
               ),
               const SizedBox(height: 16),
 
               // Historique Séjour
-              TextFormField(
-                controller: _historiqueSejourController,
+              DropdownButtonFormField<String>(
+                value: _historiqueSejour,
                 decoration: InputDecoration(
                   labelText: 'Historique Séjour',
                   labelStyle: GoogleFonts.sora(),
                   border: const OutlineInputBorder(),
                 ),
-                maxLines: 3,
+                items: ['Nouveau client', 'Revenant']
+                    .map(
+                      (historique) => DropdownMenuItem(
+                        value: historique,
+                        child: Text(historique),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) =>
+                    setState(() => _historiqueSejour = value!),
               ),
               const SizedBox(height: 16),
 
@@ -337,8 +530,10 @@ class _AddContactPageState extends State<AddContactPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Degré de Satisfaction: $_degreSatisfaction/10',
-                    style: GoogleFonts.sora(),
+                    'Degré de Satisfaction: $_degreSatisfaction/10 *',
+                    style: GoogleFonts.sora(
+                      color: _satisfactionSet ? Colors.black : Colors.red,
+                    ),
                   ),
                   Slider(
                     value: _degreSatisfaction.toDouble(),
@@ -346,8 +541,10 @@ class _AddContactPageState extends State<AddContactPage> {
                     max: 10,
                     divisions: 10,
                     label: _degreSatisfaction.toString(),
-                    onChanged: (value) =>
-                        setState(() => _degreSatisfaction = value.toInt()),
+                    onChanged: (value) => setState(() {
+                      _degreSatisfaction = value.toInt();
+                      _satisfactionSet = true;
+                    }),
                   ),
                 ],
               ),
