@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "964129578811",
+    "project_id": "thalassa-hotel-relation-guest",
+    "storage_bucket": "thalassa-hotel-relation-guest.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:964129578811:android:ed676ab1de7f5f4f31611e",
+        "android_client_info": {
+          "package_name": "com.example.thalassa_contact"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBitAss0pZNAxQ8c92HLIaqwFbCcSYcats"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
