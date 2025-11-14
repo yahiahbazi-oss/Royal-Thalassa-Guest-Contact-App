@@ -22,6 +22,7 @@ class _AddContactPageState extends State<AddContactPage> {
   final _whatsappController = TextEditingController();
   final _telephoneFixeController = TextEditingController();
   final _autreNumeroController = TextEditingController();
+  final _emailController = TextEditingController();
   final _numeroChambreController = TextEditingController();
   final _pointsPositifsController = TextEditingController();
   final _pointsNegatifsController = TextEditingController();
@@ -161,6 +162,7 @@ class _AddContactPageState extends State<AddContactPage> {
     _whatsappController.dispose();
     _telephoneFixeController.dispose();
     _autreNumeroController.dispose();
+    _emailController.dispose();
     _numeroChambreController.dispose();
     _pointsPositifsController.dispose();
     _pointsNegatifsController.dispose();
@@ -237,6 +239,7 @@ class _AddContactPageState extends State<AddContactPage> {
         whatsapp: _whatsappController.text,
         telephoneFixe: _telephoneFixeController.text,
         autreNumero: _autreNumeroController.text,
+        email: _emailController.text,
         dateNaissance: Timestamp.fromDate(_dateNaissance!),
         langue: _langue,
         sexe: _sexe,
@@ -348,6 +351,19 @@ class _AddContactPageState extends State<AddContactPage> {
                   border: const OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.phone,
+              ),
+              const SizedBox(height: 16),
+
+              // Email
+              TextFormField(
+                controller: _emailController,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  labelStyle: GoogleFonts.sora(),
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.email),
+                ),
+                keyboardType: TextInputType.emailAddress,
               ),
               const SizedBox(height: 16),
 
