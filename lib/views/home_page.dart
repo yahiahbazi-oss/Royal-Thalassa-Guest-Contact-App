@@ -112,7 +112,11 @@ class Homepage extends StatelessWidget {
                       SizedBox(height: 8),
                       Row(
                         children: [
-                          Icon(Icons.phone_callback, size: 16, color: statutColor),
+                          Icon(
+                            Icons.phone_callback,
+                            size: 16,
+                            color: statutColor,
+                          ),
                           SizedBox(width: 4),
                           Text(
                             data['statutAppel'] ?? 'Non appelé',
@@ -127,7 +131,11 @@ class Homepage extends StatelessWidget {
                       SizedBox(height: 4),
                       Row(
                         children: [
-                          Icon(Icons.flight_takeoff, size: 16, color: Colors.grey),
+                          Icon(
+                            Icons.flight_takeoff,
+                            size: 16,
+                            color: Colors.grey,
+                          ),
                           SizedBox(width: 4),
                           Text(
                             'Départ: $dateDepart',
