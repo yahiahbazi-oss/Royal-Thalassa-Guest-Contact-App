@@ -103,7 +103,10 @@ class ContactDetailsPage extends StatelessWidget {
                   if (contactData['contactId'] != null)
                     Container(
                       margin: EdgeInsets.only(top: 8),
-                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.blue.shade100,
                         borderRadius: BorderRadius.circular(16),
@@ -125,30 +128,78 @@ class ContactDetailsPage extends StatelessWidget {
 
             // Contact Information Section
             _buildSectionTitle('Informations de Contact'),
-            _buildDetailRow('Téléphone', contactData['telephone'] ?? '', Icons.phone),
-            _buildDetailRow('WhatsApp', contactData['whatsapp'] ?? '', Icons.chat),
-            _buildDetailRow('Téléphone Fixe', contactData['telephoneFixe'] ?? '', Icons.phone_android),
-            _buildDetailRow('Autre Numéro', contactData['autreNumero'] ?? '', Icons.phone_in_talk),
+            _buildDetailRow(
+              'Téléphone',
+              contactData['telephone'] ?? '',
+              Icons.phone,
+            ),
+            _buildDetailRow(
+              'WhatsApp',
+              contactData['whatsapp'] ?? '',
+              Icons.chat,
+            ),
+            _buildDetailRow(
+              'Téléphone Fixe',
+              contactData['telephoneFixe'] ?? '',
+              Icons.phone_android,
+            ),
+            _buildDetailRow(
+              'Autre Numéro',
+              contactData['autreNumero'] ?? '',
+              Icons.phone_in_talk,
+            ),
             _buildDetailRow('Email', contactData['email'] ?? '', Icons.email),
 
             Divider(),
 
             // Personal Information Section
             _buildSectionTitle('Informations Personnelles'),
-            _buildDetailRow('Date de Naissance', _formatDate(contactData['dateNaissance']), Icons.cake),
+            _buildDetailRow(
+              'Date de Naissance',
+              _formatDate(contactData['dateNaissance']),
+              Icons.cake,
+            ),
             _buildDetailRow('Sexe', contactData['sexe'] ?? '', Icons.person),
-            _buildDetailRow('Nationalité', contactData['nationalite'] ?? '', Icons.flag),
-            _buildDetailRow('Langue', contactData['langue'] ?? '', Icons.language),
+            _buildDetailRow(
+              'Nationalité',
+              contactData['nationalite'] ?? '',
+              Icons.flag,
+            ),
+            _buildDetailRow(
+              'Langue',
+              contactData['langue'] ?? '',
+              Icons.language,
+            ),
 
             Divider(),
 
             // Stay Information Section
             _buildSectionTitle('Informations de Séjour'),
-            _buildDetailRow('Date d\'Arrivée', _formatDate(contactData['dateArrivee']), Icons.flight_land),
-            _buildDetailRow('Date de Départ', _formatDate(contactData['dateDepart']), Icons.flight_takeoff),
-            _buildDetailRow('Numéro de Chambre', contactData['numeroChambre'] ?? '', Icons.hotel),
-            _buildDetailRow('Canal de Réservation', contactData['canalReservation'] ?? '', Icons.book_online),
-            _buildDetailRow('Historique Séjour', contactData['historiqueSejour'] ?? '', Icons.history),
+            _buildDetailRow(
+              'Date d\'Arrivée',
+              _formatDate(contactData['dateArrivee']),
+              Icons.flight_land,
+            ),
+            _buildDetailRow(
+              'Date de Départ',
+              _formatDate(contactData['dateDepart']),
+              Icons.flight_takeoff,
+            ),
+            _buildDetailRow(
+              'Numéro de Chambre',
+              contactData['numeroChambre'] ?? '',
+              Icons.hotel,
+            ),
+            _buildDetailRow(
+              'Canal de Réservation',
+              contactData['canalReservation'] ?? '',
+              Icons.book_online,
+            ),
+            _buildDetailRow(
+              'Historique Séjour',
+              contactData['historiqueSejour'] ?? '',
+              Icons.history,
+            ),
 
             Divider(),
 
@@ -190,7 +241,9 @@ class ContactDetailsPage extends StatelessWidget {
                               (index) => Icon(
                                 Icons.star,
                                 size: 16,
-                                color: index < (contactData['degreSatisfaction'] ?? 0)
+                                color:
+                                    index <
+                                        (contactData['degreSatisfaction'] ?? 0)
                                     ? Colors.amber
                                     : Colors.grey[300],
                               ),
@@ -203,8 +256,9 @@ class ContactDetailsPage extends StatelessWidget {
                 ],
               ),
             ),
-            
-            if (contactData['pointsPositifs'] != null && contactData['pointsPositifs'].toString().isNotEmpty)
+
+            if (contactData['pointsPositifs'] != null &&
+                contactData['pointsPositifs'].toString().isNotEmpty)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Column(
@@ -242,7 +296,8 @@ class ContactDetailsPage extends StatelessWidget {
                 ),
               ),
 
-            if (contactData['pointsNegatifs'] != null && contactData['pointsNegatifs'].toString().isNotEmpty)
+            if (contactData['pointsNegatifs'] != null &&
+                contactData['pointsNegatifs'].toString().isNotEmpty)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Column(
@@ -284,7 +339,11 @@ class ContactDetailsPage extends StatelessWidget {
 
             // Call Status Section
             _buildSectionTitle('Statut d\'Appel'),
-            _buildDetailRow('Statut', contactData['statutAppel'] ?? '', Icons.phone_callback),
+            _buildDetailRow(
+              'Statut',
+              contactData['statutAppel'] ?? '',
+              Icons.phone_callback,
+            ),
 
             Divider(),
 

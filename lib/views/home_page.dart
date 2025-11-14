@@ -52,9 +52,13 @@ class Homepage extends StatelessWidget {
           // Sort contacts by creation date (newest first)
           List<DocumentSnapshot> sortedDocs = snapshot.data!.docs.toList();
           sortedDocs.sort((a, b) {
-            Timestamp? dateA = (a.data() as Map<String, dynamic>)['dateCreation'] as Timestamp?;
-            Timestamp? dateB = (b.data() as Map<String, dynamic>)['dateCreation'] as Timestamp?;
-            
+            Timestamp? dateA =
+                (a.data() as Map<String, dynamic>)['dateCreation']
+                    as Timestamp?;
+            Timestamp? dateB =
+                (b.data() as Map<String, dynamic>)['dateCreation']
+                    as Timestamp?;
+
             if (dateA == null || dateB == null) return 0;
             return dateB.compareTo(dateA); // Descending order (newest first)
           });
@@ -65,13 +69,22 @@ class Homepage extends StatelessWidget {
               DocumentSnapshot document = sortedDocs[index];
               Map<String, dynamic> data =
                   document.data() as Map<String, dynamic>;
-              
-              // Format date and time
-              String dateCreation = '';
-              String heureCreation = data['heureCreation'] ?? '';
-              if (data['dateCreation'] != null) {
-                DateTime date = (data['dateCreation'] as Timestamp).toDate();
-                dateCreation = '${date.day}/${date.month}/${date.year}';
+
+              // Format departure date
+              String dateDepart = '';
+              if (data['dateDepart'] != null) {
+                DateTime date = (data['dateDepart'] as Timestamp).toDate();
+                dateDepart = '${date.day}/${date.month}/${date.year}';
+              }
+
+              // Get call status color
+              Color statutColor = Colors.grey;
+              if (data['statutAppel'] == 'Appelé') {
+                statutColor = Colors.green;
+              } else if (data['statutAppel'] == 'À rappeler') {
+                statutColor = Colors.orange;
+              } else if (data['statutAppel'] == 'Ne pas déranger') {
+                statutColor = Colors.red;
               }
 
               return Card(
@@ -81,47 +94,43 @@ class Homepage extends StatelessWidget {
                   leading: CircleAvatar(
                     backgroundColor: Colors.blue,
                     child: Text(
-                      '${data['nom']?[0] ?? ''}${data['prenom']?[0] ?? ''}'
-                          .toUpperCase(),
-                      style: TextStyle(color: Colors.white),
+                      data['contactId']?.toString() ?? '?',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                     ),
                   ),
-                  title: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          '${data['nom'] ?? ''} ${data['prenom'] ?? ''}',
-                          style: GoogleFonts.sora(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      if (data['contactId'] != null)
-                        Container(
-                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: Colors.blue.shade100,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            '#${data['contactId']}',
-                            style: GoogleFonts.sora(
-                              fontSize: 12,
-                              color: Colors.blue.shade900,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                    ],
+                  title: Text(
+                    '${data['nom'] ?? ''} ${data['prenom'] ?? ''}',
+                    style: GoogleFonts.sora(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Icon(Icons.phone_callback, size: 16, color: statutColor),
+                          SizedBox(width: 4),
+                          Text(
+                            data['statutAppel'] ?? 'Non appelé',
+                            style: GoogleFonts.sora(
+                              fontSize: 14,
+                              color: statutColor,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
                       SizedBox(height: 4),
                       Row(
                         children: [
-                          Icon(Icons.phone, size: 16, color: Colors.grey),
+                          Icon(Icons.flight_takeoff, size: 16, color: Colors.grey),
                           SizedBox(width: 4),
                           Text(
-                            data['telephone'] ?? '',
+                            'Départ: $dateDepart',
                             style: GoogleFonts.sora(fontSize: 14),
                           ),
                         ],
@@ -129,28 +138,14 @@ class Homepage extends StatelessWidget {
                       SizedBox(height: 4),
                       Row(
                         children: [
-                          Icon(Icons.hotel, size: 16, color: Colors.grey),
+                          Icon(Icons.star, size: 16, color: Colors.amber),
                           SizedBox(width: 4),
                           Text(
-                            'Chambre: ${data['numeroChambre'] ?? ''}',
+                            'Satisfaction: ${data['degreSatisfaction'] ?? 0}/10',
                             style: GoogleFonts.sora(fontSize: 14),
                           ),
                         ],
                       ),
-                      if (dateCreation.isNotEmpty)
-                        Padding(
-                          padding: EdgeInsets.only(top: 4),
-                          child: Row(
-                            children: [
-                              Icon(Icons.access_time, size: 16, color: Colors.grey),
-                              SizedBox(width: 4),
-                              Text(
-                                'Créé le: $dateCreation à $heureCreation',
-                                style: GoogleFonts.sora(fontSize: 12, color: Colors.grey),
-                              ),
-                            ],
-                          ),
-                        ),
                     ],
                   ),
                   trailing: Icon(Icons.arrow_forward_ios, size: 16),
@@ -158,7 +153,8 @@ class Homepage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ContactDetailsPage(contactData: data),
+                        builder: (context) =>
+                            ContactDetailsPage(contactData: data),
                       ),
                     );
                   },

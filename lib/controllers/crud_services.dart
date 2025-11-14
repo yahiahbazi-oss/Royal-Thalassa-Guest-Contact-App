@@ -12,10 +12,12 @@ class CrudServices {
   Future<int> _getNextContactId() async {
     try {
       DocumentReference counterDoc = countersCollection.doc('contactCounter');
-      
-      return await FirebaseFirestore.instance.runTransaction((transaction) async {
+
+      return await FirebaseFirestore.instance.runTransaction((
+        transaction,
+      ) async {
         DocumentSnapshot snapshot = await transaction.get(counterDoc);
-        
+
         int newId;
         if (!snapshot.exists) {
           newId = 1;
@@ -24,7 +26,7 @@ class CrudServices {
           newId = (snapshot.data() as Map<String, dynamic>)['lastId'] + 1;
           transaction.update(counterDoc, {'lastId': newId});
         }
-        
+
         return newId;
       });
     } catch (e) {
@@ -59,10 +61,10 @@ class CrudServices {
     try {
       // Get next contact ID
       int contactId = await _getNextContactId();
-      
+
       // Get current date and time
       DateTime now = DateTime.now();
-      
+
       await contactsCollection.add({
         'contactId': contactId,
         'nom': nom,
@@ -85,7 +87,8 @@ class CrudServices {
         'pointsPositifs': pointsPositifs,
         'pointsNegatifs': pointsNegatifs,
         'dateCreation': Timestamp.fromDate(now),
-        'heureCreation': '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}',
+        'heureCreation':
+            '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}',
         'statutAppel': statutAppel,
         'resultatsAppels': resultatsAppels ?? [],
         'userId': user?.uid,
