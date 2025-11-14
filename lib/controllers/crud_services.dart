@@ -5,6 +5,32 @@ class CrudServices {
   User? user = FirebaseAuth.instance.currentUser;
   final CollectionReference contactsCollection = FirebaseFirestore.instance
       .collection('contacts');
+  final CollectionReference countersCollection = FirebaseFirestore.instance
+      .collection('counters');
+
+  // Get next contact ID
+  Future<int> _getNextContactId() async {
+    try {
+      DocumentReference counterDoc = countersCollection.doc('contactCounter');
+      
+      return await FirebaseFirestore.instance.runTransaction((transaction) async {
+        DocumentSnapshot snapshot = await transaction.get(counterDoc);
+        
+        int newId;
+        if (!snapshot.exists) {
+          newId = 1;
+          transaction.set(counterDoc, {'lastId': newId});
+        } else {
+          newId = (snapshot.data() as Map<String, dynamic>)['lastId'] + 1;
+          transaction.update(counterDoc, {'lastId': newId});
+        }
+        
+        return newId;
+      });
+    } catch (e) {
+      return 1;
+    }
+  }
 
   // Add new contact
   Future<String> addNewContact({
@@ -31,7 +57,14 @@ class CrudServices {
     List<Map<String, dynamic>>? resultatsAppels,
   }) async {
     try {
+      // Get next contact ID
+      int contactId = await _getNextContactId();
+      
+      // Get current date and time
+      DateTime now = DateTime.now();
+      
       await contactsCollection.add({
+        'contactId': contactId,
         'nom': nom,
         'prenom': prenom,
         'telephone': telephone,
@@ -51,7 +84,8 @@ class CrudServices {
         'degreSatisfaction': degreSatisfaction,
         'pointsPositifs': pointsPositifs,
         'pointsNegatifs': pointsNegatifs,
-        'dateCreation': FieldValue.serverTimestamp(),
+        'dateCreation': Timestamp.fromDate(now),
+        'heureCreation': '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}',
         'statutAppel': statutAppel,
         'resultatsAppels': resultatsAppels ?? [],
         'userId': user?.uid,
@@ -60,5 +94,10 @@ class CrudServices {
     } catch (e) {
       return e.toString();
     }
+  }
+
+  // Read documents inside firestore - Get all contacts from all users
+  Stream<QuerySnapshot> getContacts() {
+    return contactsCollection.snapshots();
   }
 }
