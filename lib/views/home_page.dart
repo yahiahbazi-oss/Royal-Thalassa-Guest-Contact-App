@@ -162,7 +162,10 @@ class Homepage extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            ContactDetailsPage(contactData: data),
+                            ContactDetailsPage(
+                              contactData: data,
+                              documentId: document.id,
+                            ),
                       ),
                     );
                   },
