@@ -27,9 +27,8 @@ class _HomepageState extends State<Homepage> {
         initialChildSize: 0.7,
         minChildSize: 0.5,
         maxChildSize: 0.9,
-        builder: (context, scrollController) => FilterBottomSheet(
-          currentFilter: _currentFilter,
-        ),
+        builder: (context, scrollController) =>
+            FilterBottomSheet(currentFilter: _currentFilter),
       ),
     ).then((result) {
       if (result != null && result is ContactFilter) {
@@ -58,17 +57,18 @@ class _HomepageState extends State<Homepage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('Contacts', style: GoogleFonts.sora()),
+        title: Text('Contacts', style: GoogleFonts.sora(color: Colors.white)),
         backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+        iconTheme: IconThemeData(color: Colors.white),
         actions: [
           // Filter button
           IconButton(
             icon: Stack(
               children: [
-                Icon(Icons.filter_list),
+                Icon(Icons.filter_list, color: Colors.white),
                 if (_currentFilter.isActive)
                   Positioned(
                     right: 0,
@@ -79,10 +79,7 @@ class _HomepageState extends State<Homepage> {
                         color: Colors.red,
                         borderRadius: BorderRadius.circular(6),
                       ),
-                      constraints: BoxConstraints(
-                        minWidth: 12,
-                        minHeight: 12,
-                      ),
+                      constraints: BoxConstraints(minWidth: 12, minHeight: 12),
                     ),
                   ),
               ],
@@ -125,7 +122,9 @@ class _HomepageState extends State<Homepage> {
           }
 
           // Apply filter and sort
-          List<DocumentSnapshot> filteredDocs = _currentFilter.apply(snapshot.data!.docs.toList());
+          List<DocumentSnapshot> filteredDocs = _currentFilter.apply(
+            snapshot.data!.docs.toList(),
+          );
 
           return Column(
             children: [
@@ -176,11 +175,18 @@ class _HomepageState extends State<Homepage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.search_off, size: 80, color: Colors.grey),
+                            Icon(
+                              Icons.search_off,
+                              size: 80,
+                              color: Colors.grey,
+                            ),
                             SizedBox(height: 16),
                             Text(
                               'Aucun contact trouvé',
-                              style: GoogleFonts.sora(fontSize: 20, color: Colors.grey),
+                              style: GoogleFonts.sora(
+                                fontSize: 20,
+                                color: Colors.grey,
+                              ),
                             ),
                             SizedBox(height: 8),
                             TextButton(
@@ -204,15 +210,22 @@ class _HomepageState extends State<Homepage> {
                           // Format departure date
                           String dateDepart = '';
                           if (data['dateDepart'] != null) {
-                            DateTime date = (data['dateDepart'] as Timestamp).toDate();
-                            dateDepart = '${date.day}/${date.month}/${date.year}';
+                            DateTime date = (data['dateDepart'] as Timestamp)
+                                .toDate();
+                            dateDepart =
+                                '${date.day}/${date.month}/${date.year}';
                           }
 
                           // Get call status color
-                          Color statutColor = _getStatutColor(data['statutAppel']);
+                          Color statutColor = _getStatutColor(
+                            data['statutAppel'],
+                          );
 
                           return Card(
-                            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            margin: EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
                             elevation: 2,
                             child: ListTile(
                               leading: CircleAvatar(
@@ -228,7 +241,9 @@ class _HomepageState extends State<Homepage> {
                               ),
                               title: Text(
                                 '${data['nom'] ?? ''} ${data['prenom'] ?? ''}',
-                                style: GoogleFonts.sora(fontWeight: FontWeight.bold),
+                                style: GoogleFonts.sora(
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -273,7 +288,11 @@ class _HomepageState extends State<Homepage> {
                                   SizedBox(height: 4),
                                   Row(
                                     children: [
-                                      Icon(Icons.star, size: 16, color: Colors.amber),
+                                      Icon(
+                                        Icons.star,
+                                        size: 16,
+                                        color: Colors.amber,
+                                      ),
                                       SizedBox(width: 4),
                                       Text(
                                         'Satisfaction: ${data['degreSatisfaction'] ?? 0}/10',

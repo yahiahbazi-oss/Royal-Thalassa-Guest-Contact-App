@@ -5,10 +5,7 @@ import '../models/contact_filter.dart';
 class FilterBottomSheet extends StatefulWidget {
   final ContactFilter currentFilter;
 
-  const FilterBottomSheet({
-    super.key,
-    required this.currentFilter,
-  });
+  const FilterBottomSheet({super.key, required this.currentFilter});
 
   @override
   State<FilterBottomSheet> createState() => _FilterBottomSheetState();
@@ -132,7 +129,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   Future<void> _selectDate(BuildContext context, bool isArrival) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: isArrival 
+      initialDate: isArrival
           ? (_selectedDateArrivee ?? DateTime.now())
           : (_selectedDateDepart ?? DateTime.now()),
       firstDate: DateTime(2020),
@@ -158,15 +155,12 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     VoidCallback? onTap,
   }) {
     bool isSelected = _selectedFilterType == type;
-    
+
     return Card(
       elevation: isSelected ? 2 : 0,
       color: isSelected ? Colors.blue.shade50 : null,
       child: ListTile(
-        leading: Icon(
-          icon,
-          color: isSelected ? Colors.blue : Colors.grey,
-        ),
+        leading: Icon(icon, color: isSelected ? Colors.blue : Colors.grey),
         title: Text(
           title,
           style: GoogleFonts.sora(
@@ -174,14 +168,16 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             color: isSelected ? Colors.blue : null,
           ),
         ),
-        trailing: trailing ?? (isSelected 
-            ? Icon(Icons.check_circle, color: Colors.blue)
-            : null),
-        onTap: onTap ?? () {
-          setState(() {
-            _selectedFilterType = type;
-          });
-        },
+        trailing:
+            trailing ??
+            (isSelected ? Icon(Icons.check_circle, color: Colors.blue) : null),
+        onTap:
+            onTap ??
+            () {
+              setState(() {
+                _selectedFilterType = type;
+              });
+            },
       ),
     );
   }
@@ -332,25 +328,28 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
 
                   // Nationalité
                   Card(
-                    elevation: _selectedFilterType == FilterType.nationalite ? 2 : 0,
-                    color: _selectedFilterType == FilterType.nationalite 
-                        ? Colors.blue.shade50 
+                    elevation: _selectedFilterType == FilterType.nationalite
+                        ? 2
+                        : 0,
+                    color: _selectedFilterType == FilterType.nationalite
+                        ? Colors.blue.shade50
                         : null,
                     child: ListTile(
                       leading: Icon(
                         Icons.flag,
-                        color: _selectedFilterType == FilterType.nationalite 
-                            ? Colors.blue 
+                        color: _selectedFilterType == FilterType.nationalite
+                            ? Colors.blue
                             : Colors.grey,
                       ),
                       title: Text(
                         'Nationalité',
                         style: GoogleFonts.sora(
-                          fontWeight: _selectedFilterType == FilterType.nationalite 
-                              ? FontWeight.bold 
+                          fontWeight:
+                              _selectedFilterType == FilterType.nationalite
+                              ? FontWeight.bold
                               : FontWeight.normal,
-                          color: _selectedFilterType == FilterType.nationalite 
-                              ? Colors.blue 
+                          color: _selectedFilterType == FilterType.nationalite
+                              ? Colors.blue
                               : null,
                         ),
                       ),
@@ -383,25 +382,31 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
 
                   // Canal de réservation
                   Card(
-                    elevation: _selectedFilterType == FilterType.canalReservation ? 2 : 0,
-                    color: _selectedFilterType == FilterType.canalReservation 
-                        ? Colors.blue.shade50 
+                    elevation:
+                        _selectedFilterType == FilterType.canalReservation
+                        ? 2
+                        : 0,
+                    color: _selectedFilterType == FilterType.canalReservation
+                        ? Colors.blue.shade50
                         : null,
                     child: ListTile(
                       leading: Icon(
                         Icons.book_online,
-                        color: _selectedFilterType == FilterType.canalReservation 
-                            ? Colors.blue 
+                        color:
+                            _selectedFilterType == FilterType.canalReservation
+                            ? Colors.blue
                             : Colors.grey,
                       ),
                       title: Text(
                         'Canal de réservation',
                         style: GoogleFonts.sora(
-                          fontWeight: _selectedFilterType == FilterType.canalReservation 
-                              ? FontWeight.bold 
+                          fontWeight:
+                              _selectedFilterType == FilterType.canalReservation
+                              ? FontWeight.bold
                               : FontWeight.normal,
-                          color: _selectedFilterType == FilterType.canalReservation 
-                              ? Colors.blue 
+                          color:
+                              _selectedFilterType == FilterType.canalReservation
+                              ? Colors.blue
                               : null,
                         ),
                       ),
@@ -427,25 +432,28 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
 
                   // Statut d'appel
                   Card(
-                    elevation: _selectedFilterType == FilterType.statutAppel ? 2 : 0,
-                    color: _selectedFilterType == FilterType.statutAppel 
-                        ? Colors.blue.shade50 
+                    elevation: _selectedFilterType == FilterType.statutAppel
+                        ? 2
+                        : 0,
+                    color: _selectedFilterType == FilterType.statutAppel
+                        ? Colors.blue.shade50
                         : null,
                     child: ListTile(
                       leading: Icon(
                         Icons.phone_callback,
-                        color: _selectedFilterType == FilterType.statutAppel 
-                            ? Colors.blue 
+                        color: _selectedFilterType == FilterType.statutAppel
+                            ? Colors.blue
                             : Colors.grey,
                       ),
                       title: Text(
                         "Statut d'appel",
                         style: GoogleFonts.sora(
-                          fontWeight: _selectedFilterType == FilterType.statutAppel 
-                              ? FontWeight.bold 
+                          fontWeight:
+                              _selectedFilterType == FilterType.statutAppel
+                              ? FontWeight.bold
                               : FontWeight.normal,
-                          color: _selectedFilterType == FilterType.statutAppel 
-                              ? Colors.blue 
+                          color: _selectedFilterType == FilterType.statutAppel
+                              ? Colors.blue
                               : null,
                         ),
                       ),
@@ -484,10 +492,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     // Reset filter
                     Navigator.pop(context, ContactFilter());
                   },
-                  child: Text(
-                    'Réinitialiser',
-                    style: GoogleFonts.sora(),
-                  ),
+                  child: Text('Réinitialiser', style: GoogleFonts.sora()),
                 ),
               ),
               SizedBox(width: 16),

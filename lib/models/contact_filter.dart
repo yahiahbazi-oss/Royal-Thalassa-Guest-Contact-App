@@ -44,7 +44,8 @@ class ContactFilter {
       filterType: filterType ?? this.filterType,
       sortOrder: sortOrder ?? this.sortOrder,
       nationaliteValue: nationaliteValue ?? this.nationaliteValue,
-      canalReservationValue: canalReservationValue ?? this.canalReservationValue,
+      canalReservationValue:
+          canalReservationValue ?? this.canalReservationValue,
       statutAppelValue: statutAppelValue ?? this.statutAppelValue,
       dateArriveeValue: dateArriveeValue ?? this.dateArriveeValue,
       dateDepartValue: dateDepartValue ?? this.dateDepartValue,
@@ -76,7 +77,8 @@ class ContactFilter {
         break;
 
       case FilterType.canalReservation:
-        if (canalReservationValue != null && canalReservationValue!.isNotEmpty) {
+        if (canalReservationValue != null &&
+            canalReservationValue!.isNotEmpty) {
           filteredDocs = filteredDocs.where((doc) {
             Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
             return data['canalReservation'] == canalReservationValue;
@@ -91,8 +93,8 @@ class ContactFilter {
             if (data['dateArrivee'] == null) return false;
             DateTime docDate = (data['dateArrivee'] as Timestamp).toDate();
             return docDate.year == dateArriveeValue!.year &&
-                   docDate.month == dateArriveeValue!.month &&
-                   docDate.day == dateArriveeValue!.day;
+                docDate.month == dateArriveeValue!.month &&
+                docDate.day == dateArriveeValue!.day;
           }).toList();
         }
         break;
@@ -104,8 +106,8 @@ class ContactFilter {
             if (data['dateDepart'] == null) return false;
             DateTime docDate = (data['dateDepart'] as Timestamp).toDate();
             return docDate.year == dateDepartValue!.year &&
-                   docDate.month == dateDepartValue!.month &&
-                   docDate.day == dateDepartValue!.day;
+                docDate.month == dateDepartValue!.month &&
+                docDate.day == dateDepartValue!.day;
           }).toList();
         }
         break;
@@ -137,8 +139,10 @@ class ContactFilter {
           break;
 
         case FilterType.nomPrenom:
-          String nameA = '${dataA['nom'] ?? ''} ${dataA['prenom'] ?? ''}'.toLowerCase();
-          String nameB = '${dataB['nom'] ?? ''} ${dataB['prenom'] ?? ''}'.toLowerCase();
+          String nameA = '${dataA['nom'] ?? ''} ${dataA['prenom'] ?? ''}'
+              .toLowerCase();
+          String nameB = '${dataB['nom'] ?? ''} ${dataB['prenom'] ?? ''}'
+              .toLowerCase();
           comparison = nameA.compareTo(nameB);
           break;
 
@@ -149,8 +153,12 @@ class ContactFilter {
           break;
 
         case FilterType.canalReservation:
-          String canalA = (dataA['canalReservation'] ?? '').toString().toLowerCase();
-          String canalB = (dataB['canalReservation'] ?? '').toString().toLowerCase();
+          String canalA = (dataA['canalReservation'] ?? '')
+              .toString()
+              .toLowerCase();
+          String canalB = (dataB['canalReservation'] ?? '')
+              .toString()
+              .toLowerCase();
           comparison = canalA.compareTo(canalB);
           break;
 
