@@ -132,4 +132,66 @@ class CrudServices {
       return e.toString();
     }
   }
+
+  // Add new séjour for a contact
+  Future<String> addNouveauSejour({
+    required String documentId,
+    required Map<String, dynamic> currentContactData,
+    required Timestamp dateArrivee,
+    required Timestamp dateDepart,
+    required String numeroChambre,
+    required String canalReservation,
+    required int degreSatisfaction,
+    required String pointsPositifs,
+    required String pointsNegatifs,
+    required String statutAppel,
+  }) async {
+    try {
+      DateTime now = DateTime.now();
+
+      // Create a record of the previous séjour
+      Map<String, dynamic> previousSejour = {
+        'dateArrivee': currentContactData['dateArrivee'],
+        'dateDepart': currentContactData['dateDepart'],
+        'numeroChambre': currentContactData['numeroChambre'],
+        'canalReservation': currentContactData['canalReservation'],
+        'degreSatisfaction': currentContactData['degreSatisfaction'],
+        'pointsPositifs': currentContactData['pointsPositifs'],
+        'pointsNegatifs': currentContactData['pointsNegatifs'],
+        'statutAppel': currentContactData['statutAppel'],
+        'dateUpdate': Timestamp.fromDate(now),
+        'heureUpdate':
+            '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}',
+      };
+
+      // Get existing séjours history or create new list
+      List<Map<String, dynamic>> sejoursHistory = [];
+      if (currentContactData['sejoursHistory'] != null) {
+        sejoursHistory = List<Map<String, dynamic>>.from(
+          (currentContactData['sejoursHistory'] as List).map(
+            (e) => Map<String, dynamic>.from(e),
+          ),
+        );
+      }
+      sejoursHistory.add(previousSejour);
+
+      // Update with new séjour data
+      await contactsCollection.doc(documentId).update({
+        'dateArrivee': dateArrivee,
+        'dateDepart': dateDepart,
+        'numeroChambre': numeroChambre,
+        'canalReservation': canalReservation,
+        'degreSatisfaction': degreSatisfaction,
+        'pointsPositifs': pointsPositifs,
+        'pointsNegatifs': pointsNegatifs,
+        'statutAppel': statutAppel,
+        'sejoursHistory': sejoursHistory,
+        'lastSejourUpdate': Timestamp.fromDate(now),
+      });
+
+      return "Nouveau séjour ajouté avec succès";
+    } catch (e) {
+      return e.toString();
+    }
+  }
 }

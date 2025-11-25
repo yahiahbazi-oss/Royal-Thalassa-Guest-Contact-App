@@ -67,7 +67,7 @@ class _HomepageState extends State<Homepage> {
 
   List<DocumentSnapshot> _applySearch(List<DocumentSnapshot> docs) {
     if (_searchQuery.isEmpty) return docs;
-    
+
     String query = _searchQuery.toLowerCase().trim();
     return docs.where((doc) {
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
@@ -75,11 +75,11 @@ class _HomepageState extends State<Homepage> {
       String prenom = (data['prenom'] ?? '').toString().toLowerCase();
       String telephone = (data['telephone'] ?? '').toString().toLowerCase();
       String fullName = '$nom $prenom';
-      
-      return nom.contains(query) || 
-             prenom.contains(query) || 
-             telephone.contains(query) ||
-             fullName.contains(query);
+
+      return nom.contains(query) ||
+          prenom.contains(query) ||
+          telephone.contains(query) ||
+          fullName.contains(query);
     }).toList();
   }
 
@@ -194,7 +194,10 @@ class _HomepageState extends State<Homepage> {
                     ),
                     filled: true,
                     fillColor: Colors.grey.shade50,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                   ),
                   style: GoogleFonts.sora(),
                   onChanged: (value) {

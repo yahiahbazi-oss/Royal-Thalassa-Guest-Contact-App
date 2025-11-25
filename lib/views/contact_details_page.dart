@@ -33,6 +33,28 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
     "5 étoiles",
   ];
 
+  final List<String> _canaux = [
+    'OTS',
+    'Easy Jet Holidays',
+    'Mondial Tourism',
+    'Autre TO',
+    'Booking.com',
+    'Expedia',
+    'Autre OTA',
+    'Agence Local',
+    'Indiv',
+  ];
+
+  // Form controllers for nouveau séjour
+  DateTime? _newDateArrivee;
+  DateTime? _newDateDepart;
+  String _newNumeroChambre = '';
+  String? _newCanalReservation;
+  int _newDegreSatisfaction = 5;
+  String _newPointsPositifs = '';
+  String _newPointsNegatifs = '';
+  String _newStatutAppel = 'Non appelé';
+
   @override
   void initState() {
     super.initState();
@@ -368,6 +390,475 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
     );
   }
 
+  void _showNouveauSejourDialog() {
+    // Reset form values
+    _newDateArrivee = null;
+    _newDateDepart = null;
+    _newNumeroChambre = '';
+    _newCanalReservation = null;
+    _newDegreSatisfaction = 5;
+    _newPointsPositifs = '';
+    _newPointsNegatifs = '';
+    _newStatutAppel = 'Non appelé';
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: Text(
+                'Nouveau Séjour',
+                style: GoogleFonts.sora(fontWeight: FontWeight.bold),
+              ),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Date d'arrivée
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: Icon(Icons.flight_land, color: Colors.blue),
+                      title: Text("Date d'arrivée", style: GoogleFonts.sora()),
+                      subtitle: Text(
+                        _newDateArrivee != null
+                            ? '${_newDateArrivee!.day}/${_newDateArrivee!.month}/${_newDateArrivee!.year}'
+                            : 'Sélectionner',
+                        style: GoogleFonts.sora(color: Colors.blue),
+                      ),
+                      onTap: () async {
+                        final date = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2030),
+                        );
+                        if (date != null) {
+                          setDialogState(() => _newDateArrivee = date);
+                        }
+                      },
+                    ),
+
+                    // Date de départ
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: Icon(Icons.flight_takeoff, color: Colors.blue),
+                      title: Text('Date de départ', style: GoogleFonts.sora()),
+                      subtitle: Text(
+                        _newDateDepart != null
+                            ? '${_newDateDepart!.day}/${_newDateDepart!.month}/${_newDateDepart!.year}'
+                            : 'Sélectionner',
+                        style: GoogleFonts.sora(color: Colors.blue),
+                      ),
+                      onTap: () async {
+                        final date = await showDatePicker(
+                          context: context,
+                          initialDate: _newDateArrivee ?? DateTime.now(),
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2030),
+                        );
+                        if (date != null) {
+                          setDialogState(() => _newDateDepart = date);
+                        }
+                      },
+                    ),
+
+                    SizedBox(height: 8),
+
+                    // Numéro de chambre
+                    TextField(
+                      decoration: InputDecoration(
+                        labelText: 'Numéro de chambre',
+                        labelStyle: GoogleFonts.sora(),
+                        prefixIcon: Icon(Icons.hotel),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      style: GoogleFonts.sora(),
+                      onChanged: (value) => _newNumeroChambre = value,
+                    ),
+
+                    SizedBox(height: 16),
+
+                    // Canal de réservation
+                    DropdownButtonFormField<String>(
+                      value: _newCanalReservation,
+                      decoration: InputDecoration(
+                        labelText: 'Canal de réservation',
+                        labelStyle: GoogleFonts.sora(),
+                        prefixIcon: Icon(Icons.book_online),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      items: _canaux.map((canal) {
+                        return DropdownMenuItem(
+                          value: canal,
+                          child: Text(canal, style: GoogleFonts.sora()),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setDialogState(() => _newCanalReservation = value);
+                      },
+                    ),
+
+                    SizedBox(height: 16),
+
+                    // Degré de satisfaction
+                    Text(
+                      'Degré de satisfaction: $_newDegreSatisfaction/10',
+                      style: GoogleFonts.sora(fontWeight: FontWeight.w600),
+                    ),
+                    Slider(
+                      value: _newDegreSatisfaction.toDouble(),
+                      min: 0,
+                      max: 10,
+                      divisions: 10,
+                      label: _newDegreSatisfaction.toString(),
+                      onChanged: (value) {
+                        setDialogState(
+                          () => _newDegreSatisfaction = value.toInt(),
+                        );
+                      },
+                    ),
+
+                    SizedBox(height: 8),
+
+                    // Points positifs
+                    TextField(
+                      decoration: InputDecoration(
+                        labelText: 'Points positifs',
+                        labelStyle: GoogleFonts.sora(),
+                        prefixIcon: Icon(Icons.thumb_up, color: Colors.green),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      style: GoogleFonts.sora(),
+                      maxLines: 2,
+                      onChanged: (value) => _newPointsPositifs = value,
+                    ),
+
+                    SizedBox(height: 16),
+
+                    // Points négatifs
+                    TextField(
+                      decoration: InputDecoration(
+                        labelText: 'Points négatifs',
+                        labelStyle: GoogleFonts.sora(),
+                        prefixIcon: Icon(Icons.thumb_down, color: Colors.red),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      style: GoogleFonts.sora(),
+                      maxLines: 2,
+                      onChanged: (value) => _newPointsNegatifs = value,
+                    ),
+
+                    SizedBox(height: 16),
+
+                    // Statut d'appel
+                    DropdownButtonFormField<String>(
+                      value: _newStatutAppel,
+                      decoration: InputDecoration(
+                        labelText: "Statut d'appel",
+                        labelStyle: GoogleFonts.sora(),
+                        prefixIcon: Icon(Icons.phone_callback),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      items: ['Non appelé', ..._resultatsAppelOptions].map((status) {
+                        return DropdownMenuItem(
+                          value: status,
+                          child: Text(status, style: GoogleFonts.sora()),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setDialogState(() => _newStatutAppel = value ?? 'Non appelé');
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('Annuler', style: GoogleFonts.sora()),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () async {
+                    if (_newDateArrivee == null || _newDateDepart == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Veuillez sélectionner les dates',
+                            style: GoogleFonts.sora(),
+                          ),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                      return;
+                    }
+
+                    Navigator.pop(context);
+                    await _saveNouveauSejour();
+                  },
+                  child: Text(
+                    'Enregistrer',
+                    style: GoogleFonts.sora(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _saveNouveauSejour() async {
+    String result = await _crudServices.addNouveauSejour(
+      documentId: widget.documentId,
+      currentContactData: contactData,
+      dateArrivee: Timestamp.fromDate(_newDateArrivee!),
+      dateDepart: Timestamp.fromDate(_newDateDepart!),
+      numeroChambre: _newNumeroChambre,
+      canalReservation: _newCanalReservation ?? '',
+      degreSatisfaction: _newDegreSatisfaction,
+      pointsPositifs: _newPointsPositifs,
+      pointsNegatifs: _newPointsNegatifs,
+      statutAppel: _newStatutAppel,
+    );
+
+    if (mounted) {
+      DateTime now = DateTime.now();
+
+      // Create previous séjour record
+      Map<String, dynamic> previousSejour = {
+        'dateArrivee': contactData['dateArrivee'],
+        'dateDepart': contactData['dateDepart'],
+        'numeroChambre': contactData['numeroChambre'],
+        'canalReservation': contactData['canalReservation'],
+        'degreSatisfaction': contactData['degreSatisfaction'],
+        'pointsPositifs': contactData['pointsPositifs'],
+        'pointsNegatifs': contactData['pointsNegatifs'],
+        'statutAppel': contactData['statutAppel'],
+        'dateUpdate': Timestamp.fromDate(now),
+        'heureUpdate':
+            '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}',
+      };
+
+      setState(() {
+        // Add to history
+        if (contactData['sejoursHistory'] == null) {
+          contactData['sejoursHistory'] = [];
+        }
+        (contactData['sejoursHistory'] as List).add(previousSejour);
+
+        // Update current data
+        contactData['dateArrivee'] = Timestamp.fromDate(_newDateArrivee!);
+        contactData['dateDepart'] = Timestamp.fromDate(_newDateDepart!);
+        contactData['numeroChambre'] = _newNumeroChambre;
+        contactData['canalReservation'] = _newCanalReservation ?? '';
+        contactData['degreSatisfaction'] = _newDegreSatisfaction;
+        contactData['pointsPositifs'] = _newPointsPositifs;
+        contactData['pointsNegatifs'] = _newPointsNegatifs;
+        contactData['statutAppel'] = _newStatutAppel;
+        contactData['lastSejourUpdate'] = Timestamp.fromDate(now);
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result, style: GoogleFonts.sora()),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+  }
+
+  Widget _buildSejourHistoryCard(Map<String, dynamic> sejour, int index) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header with date
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.orange.shade100,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Text(
+                  'Séjour #${index + 1}',
+                  style: GoogleFonts.sora(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orange.shade800,
+                  ),
+                ),
+              ),
+              if (sejour['dateUpdate'] != null)
+                Text(
+                  'Archivé le ${_formatDateTime(sejour['dateUpdate'], sejour['heureUpdate'])}',
+                  style: GoogleFonts.sora(
+                    fontSize: 10,
+                    color: Colors.grey[600],
+                  ),
+                ),
+            ],
+          ),
+          SizedBox(height: 12),
+
+          // Dates
+          Row(
+            children: [
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(Icons.flight_land, size: 16, color: Colors.blue),
+                    SizedBox(width: 4),
+                    Text(
+                      'Arrivée: ${_formatDate(sejour['dateArrivee'])}',
+                      style: GoogleFonts.sora(fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(Icons.flight_takeoff, size: 16, color: Colors.blue),
+                    SizedBox(width: 4),
+                    Text(
+                      'Départ: ${_formatDate(sejour['dateDepart'])}',
+                      style: GoogleFonts.sora(fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 8),
+
+          // Room and channel
+          Row(
+            children: [
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(Icons.hotel, size: 16, color: Colors.grey),
+                    SizedBox(width: 4),
+                    Text(
+                      'Chambre: ${sejour['numeroChambre'] ?? 'N/A'}',
+                      style: GoogleFonts.sora(fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(Icons.book_online, size: 16, color: Colors.grey),
+                    SizedBox(width: 4),
+                    Flexible(
+                      child: Text(
+                        sejour['canalReservation'] ?? 'N/A',
+                        style: GoogleFonts.sora(fontSize: 12),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 8),
+
+          // Satisfaction and status
+          Row(
+            children: [
+              Icon(Icons.star, size: 16, color: Colors.amber),
+              SizedBox(width: 4),
+              Text(
+                '${sejour['degreSatisfaction'] ?? 0}/10',
+                style: GoogleFonts.sora(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(width: 16),
+              Icon(
+                _getIconForResultat(sejour['statutAppel'] ?? ''),
+                size: 16,
+                color: _getColorForResultat(sejour['statutAppel'] ?? ''),
+              ),
+              SizedBox(width: 4),
+              Text(
+                sejour['statutAppel'] ?? 'N/A',
+                style: GoogleFonts.sora(
+                  fontSize: 12,
+                  color: _getColorForResultat(sejour['statutAppel'] ?? ''),
+                ),
+              ),
+            ],
+          ),
+
+          // Points
+          if ((sejour['pointsPositifs'] ?? '').toString().isNotEmpty) ...[
+            SizedBox(height: 8),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.thumb_up, size: 14, color: Colors.green),
+                SizedBox(width: 4),
+                Flexible(
+                  child: Text(
+                    sejour['pointsPositifs'],
+                    style: GoogleFonts.sora(fontSize: 11, color: Colors.green),
+                  ),
+                ),
+              ],
+            ),
+          ],
+          if ((sejour['pointsNegatifs'] ?? '').toString().isNotEmpty) ...[
+            SizedBox(height: 4),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.thumb_down, size: 14, color: Colors.red),
+                SizedBox(width: 4),
+                Flexible(
+                  child: Text(
+                    sejour['pointsNegatifs'],
+                    style: GoogleFonts.sora(fontSize: 11, color: Colors.red),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -484,33 +975,80 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
 
             Divider(),
 
-            // Stay Information Section
-            _buildSectionTitle('Informations de Séjour'),
-            _buildDetailRow(
-              'Date d\'Arrivée',
-              _formatDate(contactData['dateArrivee']),
-              Icons.flight_land,
+            // Stay Information Section - Current Séjour
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildSectionTitle('Séjour Actuel'),
+                ElevatedButton.icon(
+                  onPressed: _showNouveauSejourDialog,
+                  icon: Icon(Icons.add, size: 18),
+                  label: Text('Nouveau séjour', style: GoogleFonts.sora(fontSize: 12)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  ),
+                ),
+              ],
             ),
-            _buildDetailRow(
-              'Date de Départ',
-              _formatDate(contactData['dateDepart']),
-              Icons.flight_takeoff,
+
+            // Current séjour in a highlighted frame
+            Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.blue.shade200, width: 2),
+              ),
+              child: Column(
+                children: [
+                  _buildDetailRow(
+                    'Date d\'Arrivée',
+                    _formatDate(contactData['dateArrivee']),
+                    Icons.flight_land,
+                  ),
+                  _buildDetailRow(
+                    'Date de Départ',
+                    _formatDate(contactData['dateDepart']),
+                    Icons.flight_takeoff,
+                  ),
+                  _buildDetailRow(
+                    'Numéro de Chambre',
+                    contactData['numeroChambre'] ?? '',
+                    Icons.hotel,
+                  ),
+                  _buildDetailRow(
+                    'Canal de Réservation',
+                    contactData['canalReservation'] ?? '',
+                    Icons.book_online,
+                  ),
+                  _buildDetailRow(
+                    'Historique Séjour',
+                    contactData['historiqueSejour'] ?? '',
+                    Icons.history,
+                  ),
+                ],
+              ),
             ),
-            _buildDetailRow(
-              'Numéro de Chambre',
-              contactData['numeroChambre'] ?? '',
-              Icons.hotel,
-            ),
-            _buildDetailRow(
-              'Canal de Réservation',
-              contactData['canalReservation'] ?? '',
-              Icons.book_online,
-            ),
-            _buildDetailRow(
-              'Historique Séjour',
-              contactData['historiqueSejour'] ?? '',
-              Icons.history,
-            ),
+
+            // Previous séjours history
+            if ((contactData['sejoursHistory'] as List?)?.isNotEmpty ?? false) ...[
+              SizedBox(height: 16),
+              _buildSectionTitle('Historique des Séjours'),
+              ...List.generate(
+                (contactData['sejoursHistory'] as List).length,
+                (index) {
+                  int reverseIndex = (contactData['sejoursHistory'] as List).length - 1 - index;
+                  return _buildSejourHistoryCard(
+                    Map<String, dynamic>.from(
+                      (contactData['sejoursHistory'] as List)[reverseIndex],
+                    ),
+                    reverseIndex,
+                  );
+                },
+              ),
+            ],
 
             Divider(),
 

@@ -2,13 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum SortOrder { ascending, descending }
 
-enum FilterType {
-  nationalite,
-  nomPrenom,
-  canalReservation,
-  statutAppel,
-  none,
-}
+enum FilterType { nationalite, nomPrenom, canalReservation, statutAppel, none }
 
 class ContactFilter {
   final FilterType filterType;
