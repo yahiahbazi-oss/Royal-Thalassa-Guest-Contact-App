@@ -3,19 +3,94 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../controllers/crud_services.dart';
+import '../models/contact_filter.dart';
+import '../widgets/filter_bottom_sheet.dart';
 import 'contact_details_page.dart';
 
-class Homepage extends StatelessWidget {
+class Homepage extends StatefulWidget {
   const Homepage({super.key});
 
   @override
+  State<Homepage> createState() => _HomepageState();
+}
+
+class _HomepageState extends State<Homepage> {
+  final CrudServices _crudServices = CrudServices();
+  ContactFilter _currentFilter = ContactFilter();
+
+  void _showFilterBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        minChildSize: 0.5,
+        maxChildSize: 0.9,
+        builder: (context, scrollController) => FilterBottomSheet(
+          currentFilter: _currentFilter,
+        ),
+      ),
+    ).then((result) {
+      if (result != null && result is ContactFilter) {
+        setState(() {
+          _currentFilter = result;
+        });
+      }
+    });
+  }
+
+  Color _getStatutColor(String? statut) {
+    if (statut == null) return Colors.grey;
+    if (statut.contains('étoile')) {
+      if (statut == "5 étoiles") return Colors.green;
+      if (statut == "4 étoiles") return Colors.lightGreen;
+      if (statut == "3 étoiles") return Colors.amber;
+      if (statut == "2 étoiles") return Colors.orange;
+      if (statut == "1 étoile") return Colors.deepOrange;
+      if (statut == "0 étoiles") return Colors.red;
+    }
+    if (statut == "N'a pas répondu") return Colors.grey;
+    if (statut == "Pas satisfait") return Colors.red;
+    if (statut == "Ne veut pas faire d'avis") return Colors.blueGrey;
+    return Colors.grey;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final CrudServices _crudServices = CrudServices();
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Contacts', style: GoogleFonts.sora()),
         backgroundColor: Colors.blue,
+        actions: [
+          // Filter button
+          IconButton(
+            icon: Stack(
+              children: [
+                Icon(Icons.filter_list),
+                if (_currentFilter.isActive)
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      padding: EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      constraints: BoxConstraints(
+                        minWidth: 12,
+                        minHeight: 12,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            onPressed: _showFilterBottomSheet,
+            tooltip: 'Filtres',
+          ),
+        ],
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _crudServices.getContacts(),
@@ -49,129 +124,183 @@ class Homepage extends StatelessWidget {
             );
           }
 
-          // Sort contacts by creation date (newest first)
-          List<DocumentSnapshot> sortedDocs = snapshot.data!.docs.toList();
-          sortedDocs.sort((a, b) {
-            Timestamp? dateA =
-                (a.data() as Map<String, dynamic>)['dateCreation']
-                    as Timestamp?;
-            Timestamp? dateB =
-                (b.data() as Map<String, dynamic>)['dateCreation']
-                    as Timestamp?;
+          // Apply filter and sort
+          List<DocumentSnapshot> filteredDocs = _currentFilter.apply(snapshot.data!.docs.toList());
 
-            if (dateA == null || dateB == null) return 0;
-            return dateB.compareTo(dateA); // Descending order (newest first)
-          });
-
-          return ListView.builder(
-            itemCount: sortedDocs.length,
-            itemBuilder: (context, index) {
-              DocumentSnapshot document = sortedDocs[index];
-              Map<String, dynamic> data =
-                  document.data() as Map<String, dynamic>;
-
-              // Format departure date
-              String dateDepart = '';
-              if (data['dateDepart'] != null) {
-                DateTime date = (data['dateDepart'] as Timestamp).toDate();
-                dateDepart = '${date.day}/${date.month}/${date.year}';
-              }
-
-              // Get call status color
-              Color statutColor = Colors.grey;
-              if (data['statutAppel'] == 'Appelé') {
-                statutColor = Colors.green;
-              } else if (data['statutAppel'] == 'À rappeler') {
-                statutColor = Colors.orange;
-              } else if (data['statutAppel'] == 'Ne pas déranger') {
-                statutColor = Colors.red;
-              }
-
-              return Card(
-                margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                elevation: 2,
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: Colors.blue,
-                    child: Text(
-                      data['contactId']?.toString() ?? '?',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ),
-                  title: Text(
-                    '${data['nom'] ?? ''} ${data['prenom'] ?? ''}',
-                    style: GoogleFonts.sora(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+          return Column(
+            children: [
+              // Active filter chip
+              if (_currentFilter.isActive)
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  color: Colors.blue.shade50,
+                  child: Row(
                     children: [
-                      SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.phone_callback,
-                            size: 16,
-                            color: statutColor,
+                      Icon(Icons.filter_alt, size: 18, color: Colors.blue),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Filtre: ${_currentFilter.getFilterLabel()}',
+                          style: GoogleFonts.sora(
+                            color: Colors.blue.shade800,
+                            fontWeight: FontWeight.w600,
                           ),
-                          SizedBox(width: 4),
-                          Text(
-                            data['statutAppel'] ?? 'Non appelé',
-                            style: GoogleFonts.sora(
-                              fontSize: 14,
-                              color: statutColor,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                      SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.flight_takeoff,
-                            size: 16,
-                            color: Colors.grey,
-                          ),
-                          SizedBox(width: 4),
-                          Text(
-                            'Départ: $dateDepart',
-                            style: GoogleFonts.sora(fontSize: 14),
-                          ),
-                        ],
+                      Text(
+                        '${filteredDocs.length} résultat(s)',
+                        style: GoogleFonts.sora(
+                          color: Colors.blue.shade600,
+                          fontSize: 12,
+                        ),
                       ),
-                      SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Icon(Icons.star, size: 16, color: Colors.amber),
-                          SizedBox(width: 4),
-                          Text(
-                            'Satisfaction: ${data['degreSatisfaction'] ?? 0}/10',
-                            style: GoogleFonts.sora(fontSize: 14),
-                          ),
-                        ],
+                      IconButton(
+                        icon: Icon(Icons.close, size: 18, color: Colors.blue),
+                        onPressed: () {
+                          setState(() {
+                            _currentFilter = ContactFilter();
+                          });
+                        },
+                        padding: EdgeInsets.zero,
+                        constraints: BoxConstraints(),
                       ),
                     ],
                   ),
-                  trailing: Icon(Icons.arrow_forward_ios, size: 16),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            ContactDetailsPage(
-                              contactData: data,
-                              documentId: document.id,
-                            ),
-                      ),
-                    );
-                  },
                 ),
-              );
-            },
+
+              // Contact list
+              Expanded(
+                child: filteredDocs.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.search_off, size: 80, color: Colors.grey),
+                            SizedBox(height: 16),
+                            Text(
+                              'Aucun contact trouvé',
+                              style: GoogleFonts.sora(fontSize: 20, color: Colors.grey),
+                            ),
+                            SizedBox(height: 8),
+                            TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  _currentFilter = ContactFilter();
+                                });
+                              },
+                              child: Text('Réinitialiser le filtre'),
+                            ),
+                          ],
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: filteredDocs.length,
+                        itemBuilder: (context, index) {
+                          DocumentSnapshot document = filteredDocs[index];
+                          Map<String, dynamic> data =
+                              document.data() as Map<String, dynamic>;
+
+                          // Format departure date
+                          String dateDepart = '';
+                          if (data['dateDepart'] != null) {
+                            DateTime date = (data['dateDepart'] as Timestamp).toDate();
+                            dateDepart = '${date.day}/${date.month}/${date.year}';
+                          }
+
+                          // Get call status color
+                          Color statutColor = _getStatutColor(data['statutAppel']);
+
+                          return Card(
+                            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            elevation: 2,
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: Colors.blue,
+                                child: Text(
+                                  data['contactId']?.toString() ?? '?',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                              ),
+                              title: Text(
+                                '${data['nom'] ?? ''} ${data['prenom'] ?? ''}',
+                                style: GoogleFonts.sora(fontWeight: FontWeight.bold),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.phone_callback,
+                                        size: 16,
+                                        color: statutColor,
+                                      ),
+                                      SizedBox(width: 4),
+                                      Expanded(
+                                        child: Text(
+                                          data['statutAppel'] ?? 'Non appelé',
+                                          style: GoogleFonts.sora(
+                                            fontSize: 14,
+                                            color: statutColor,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.flight_takeoff,
+                                        size: 16,
+                                        color: Colors.grey,
+                                      ),
+                                      SizedBox(width: 4),
+                                      Text(
+                                        'Départ: $dateDepart',
+                                        style: GoogleFonts.sora(fontSize: 14),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      Icon(Icons.star, size: 16, color: Colors.amber),
+                                      SizedBox(width: 4),
+                                      Text(
+                                        'Satisfaction: ${data['degreSatisfaction'] ?? 0}/10',
+                                        style: GoogleFonts.sora(fontSize: 14),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ContactDetailsPage(
+                                      contactData: data,
+                                      documentId: document.id,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        },
+                      ),
+              ),
+            ],
           );
         },
       ),

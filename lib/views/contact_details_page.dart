@@ -52,7 +52,8 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
     if (date == null) return 'N/A';
     if (date is Timestamp) {
       DateTime dateTime = date.toDate();
-      String formattedDate = '${dateTime.day.toString().padLeft(2, '0')}/${dateTime.month.toString().padLeft(2, '0')}/${dateTime.year}';
+      String formattedDate =
+          '${dateTime.day.toString().padLeft(2, '0')}/${dateTime.month.toString().padLeft(2, '0')}/${dateTime.year}';
       if (heure != null && heure.isNotEmpty) {
         return '$formattedDate à $heure';
       }
@@ -170,7 +171,9 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
                   title: Text(
                     option,
                     style: GoogleFonts.sora(
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                       color: isSelected ? Colors.blue : null,
                     ),
                   ),
@@ -236,7 +239,9 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
     List<Map<String, dynamic>> currentResultats = [];
     if (contactData['resultatsAppels'] != null) {
       currentResultats = List<Map<String, dynamic>>.from(
-        (contactData['resultatsAppels'] as List).map((e) => Map<String, dynamic>.from(e)),
+        (contactData['resultatsAppels'] as List).map(
+          (e) => Map<String, dynamic>.from(e),
+        ),
       );
     }
 
@@ -256,7 +261,8 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
         (contactData['resultatsAppels'] as List).add({
           'resultat': newResultat,
           'date': Timestamp.fromDate(now),
-          'heure': '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}',
+          'heure':
+              '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}',
         });
       });
 
@@ -295,13 +301,18 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
                     itemBuilder: (context, index) {
                       var item = resultats[resultats.length - 1 - index];
                       String resultat = item['resultat'] ?? '';
-                      String dateStr = _formatDateTime(item['date'], item['heure']);
+                      String dateStr = _formatDateTime(
+                        item['date'],
+                        item['heure'],
+                      );
 
                       return Card(
                         margin: EdgeInsets.symmetric(vertical: 4),
                         child: ListTile(
                           leading: CircleAvatar(
-                            backgroundColor: _getColorForResultat(resultat).withOpacity(0.2),
+                            backgroundColor: _getColorForResultat(
+                              resultat,
+                            ).withOpacity(0.2),
                             child: Icon(
                               _getIconForResultat(resultat),
                               color: _getColorForResultat(resultat),
@@ -310,7 +321,9 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
                           ),
                           title: Text(
                             resultat,
-                            style: GoogleFonts.sora(fontWeight: FontWeight.w600),
+                            style: GoogleFonts.sora(
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                           subtitle: Text(
                             dateStr,
@@ -321,7 +334,10 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
                           ),
                           trailing: index == 0
                               ? Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: Colors.green.shade100,
                                     borderRadius: BorderRadius.circular(12),
@@ -639,17 +655,23 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
               child: Container(
                 padding: EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: _getColorForResultat(contactData['statutAppel'] ?? '').withOpacity(0.1),
+                  color: _getColorForResultat(
+                    contactData['statutAppel'] ?? '',
+                  ).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: _getColorForResultat(contactData['statutAppel'] ?? '').withOpacity(0.5),
+                    color: _getColorForResultat(
+                      contactData['statutAppel'] ?? '',
+                    ).withOpacity(0.5),
                   ),
                 ),
                 child: Row(
                   children: [
                     Icon(
                       _getIconForResultat(contactData['statutAppel'] ?? ''),
-                      color: _getColorForResultat(contactData['statutAppel'] ?? ''),
+                      color: _getColorForResultat(
+                        contactData['statutAppel'] ?? '',
+                      ),
                     ),
                     SizedBox(width: 12),
                     Expanded(
@@ -668,7 +690,9 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
                             style: GoogleFonts.sora(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: _getColorForResultat(contactData['statutAppel'] ?? ''),
+                              color: _getColorForResultat(
+                                contactData['statutAppel'] ?? '',
+                              ),
                             ),
                           ),
                         ],

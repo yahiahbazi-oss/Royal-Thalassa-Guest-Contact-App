@@ -112,20 +112,21 @@ class CrudServices {
   }) async {
     try {
       DateTime now = DateTime.now();
-      
+
       // Add new result to history
       List<Map<String, dynamic>> updatedResultats = List.from(currentResultats);
       updatedResultats.add({
         'resultat': newStatutAppel,
         'date': Timestamp.fromDate(now),
-        'heure': '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}',
+        'heure':
+            '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}',
       });
 
       await contactsCollection.doc(documentId).update({
         'statutAppel': newStatutAppel,
         'resultatsAppels': updatedResultats,
       });
-      
+
       return "Résultat d'appel mis à jour avec succès";
     } catch (e) {
       return e.toString();
