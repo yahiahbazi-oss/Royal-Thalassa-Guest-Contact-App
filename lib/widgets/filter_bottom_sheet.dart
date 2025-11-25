@@ -17,8 +17,6 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   String? _selectedNationalite;
   String? _selectedCanal;
   String? _selectedStatutAppel;
-  DateTime? _selectedDateArrivee;
-  DateTime? _selectedDateDepart;
 
   // Predefined nationalities list
   final List<String> _nationalites = [
@@ -122,29 +120,6 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     _selectedNationalite = widget.currentFilter.nationaliteValue;
     _selectedCanal = widget.currentFilter.canalReservationValue;
     _selectedStatutAppel = widget.currentFilter.statutAppelValue;
-    _selectedDateArrivee = widget.currentFilter.dateArriveeValue;
-    _selectedDateDepart = widget.currentFilter.dateDepartValue;
-  }
-
-  Future<void> _selectDate(BuildContext context, bool isArrival) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: isArrival
-          ? (_selectedDateArrivee ?? DateTime.now())
-          : (_selectedDateDepart ?? DateTime.now()),
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
-      locale: const Locale('fr', 'FR'),
-    );
-    if (picked != null) {
-      setState(() {
-        if (isArrival) {
-          _selectedDateArrivee = picked;
-        } else {
-          _selectedDateDepart = picked;
-        }
-      });
-    }
   }
 
   Widget _buildFilterOption({
@@ -180,10 +155,6 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             },
       ),
     );
-  }
-
-  String _formatDate(DateTime date) {
-    return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
   }
 
   @override
@@ -276,54 +247,6 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     type: FilterType.none,
                     title: 'Aucun filtre (Date de création)',
                     icon: Icons.filter_alt_off,
-                  ),
-
-                  // Date d'arrivée
-                  _buildFilterOption(
-                    type: FilterType.dateArrivee,
-                    title: "Date d'arrivée",
-                    icon: Icons.flight_land,
-                    trailing: _selectedFilterType == FilterType.dateArrivee
-                        ? TextButton(
-                            onPressed: () => _selectDate(context, true),
-                            child: Text(
-                              _selectedDateArrivee != null
-                                  ? _formatDate(_selectedDateArrivee!)
-                                  : 'Choisir',
-                              style: GoogleFonts.sora(color: Colors.blue),
-                            ),
-                          )
-                        : null,
-                    onTap: () {
-                      setState(() {
-                        _selectedFilterType = FilterType.dateArrivee;
-                      });
-                      _selectDate(context, true);
-                    },
-                  ),
-
-                  // Date de départ
-                  _buildFilterOption(
-                    type: FilterType.dateDepart,
-                    title: 'Date de départ',
-                    icon: Icons.flight_takeoff,
-                    trailing: _selectedFilterType == FilterType.dateDepart
-                        ? TextButton(
-                            onPressed: () => _selectDate(context, false),
-                            child: Text(
-                              _selectedDateDepart != null
-                                  ? _formatDate(_selectedDateDepart!)
-                                  : 'Choisir',
-                              style: GoogleFonts.sora(color: Colors.blue),
-                            ),
-                          )
-                        : null,
-                    onTap: () {
-                      setState(() {
-                        _selectedFilterType = FilterType.dateDepart;
-                      });
-                      _selectDate(context, false);
-                    },
                   ),
 
                   // Nationalité
@@ -509,8 +432,6 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       nationaliteValue: _selectedNationalite,
                       canalReservationValue: _selectedCanal,
                       statutAppelValue: _selectedStatutAppel,
-                      dateArriveeValue: _selectedDateArrivee,
-                      dateDepartValue: _selectedDateDepart,
                     );
                     Navigator.pop(context, newFilter);
                   },

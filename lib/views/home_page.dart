@@ -17,6 +17,16 @@ class Homepage extends StatefulWidget {
 class _HomepageState extends State<Homepage> {
   final CrudServices _crudServices = CrudServices();
   ContactFilter _currentFilter = ContactFilter();
+  String _searchQuery = '';
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _searchFocusNode.dispose();
+    super.dispose();
+  }
 
   void _showFilterBottomSheet() {
     showModalBottomSheet(
@@ -53,6 +63,24 @@ class _HomepageState extends State<Homepage> {
     if (statut == "Pas satisfait") return Colors.red;
     if (statut == "Ne veut pas faire d'avis") return Colors.blueGrey;
     return Colors.grey;
+  }
+
+  List<DocumentSnapshot> _applySearch(List<DocumentSnapshot> docs) {
+    if (_searchQuery.isEmpty) return docs;
+    
+    String query = _searchQuery.toLowerCase().trim();
+    return docs.where((doc) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      String nom = (data['nom'] ?? '').toString().toLowerCase();
+      String prenom = (data['prenom'] ?? '').toString().toLowerCase();
+      String telephone = (data['telephone'] ?? '').toString().toLowerCase();
+      String fullName = '$nom $prenom';
+      
+      return nom.contains(query) || 
+             prenom.contains(query) || 
+             telephone.contains(query) ||
+             fullName.contains(query);
+    }).toList();
   }
 
   @override
@@ -121,13 +149,64 @@ class _HomepageState extends State<Homepage> {
             );
           }
 
-          // Apply filter and sort
+          // Apply filter and sort, then search
           List<DocumentSnapshot> filteredDocs = _currentFilter.apply(
             snapshot.data!.docs.toList(),
           );
+          filteredDocs = _applySearch(filteredDocs);
 
           return Column(
             children: [
+              // Search bar
+              Container(
+                padding: EdgeInsets.all(16),
+                color: Colors.white,
+                child: TextField(
+                  controller: _searchController,
+                  focusNode: _searchFocusNode,
+                  autofocus: false,
+                  decoration: InputDecoration(
+                    hintText: 'Rechercher par nom, prénom ou téléphone...',
+                    hintStyle: GoogleFonts.sora(color: Colors.grey),
+                    prefixIcon: Icon(Icons.search, color: Colors.blue),
+                    suffixIcon: _searchQuery.isNotEmpty
+                        ? IconButton(
+                            icon: Icon(Icons.clear, color: Colors.grey),
+                            onPressed: () {
+                              setState(() {
+                                _searchController.clear();
+                                _searchQuery = '';
+                              });
+                            },
+                          )
+                        : null,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.blue, width: 2),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey.shade50,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  ),
+                  style: GoogleFonts.sora(),
+                  onChanged: (value) {
+                    setState(() {
+                      _searchQuery = value;
+                    });
+                    // Keep focus on search field
+                    _searchFocusNode.requestFocus();
+                  },
+                ),
+              ),
+
               // Active filter chip
               if (_currentFilter.isActive)
                 Container(
