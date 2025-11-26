@@ -983,73 +983,77 @@ class _TableauDeBordPageState extends State<TableauDeBordPage> {
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: Colors.amber.shade300),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                child: Column(
                   children: [
-                    Icon(Icons.star, color: Colors.amber, size: 32),
-                    SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          'Moyenne de Satisfaction',
-                          style: GoogleFonts.sora(
-                            fontSize: 14,
-                            color: Colors.grey.shade700,
-                          ),
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              _averageSatisfaction.toStringAsFixed(1),
-                              style: GoogleFonts.sora(
-                                fontSize: 36,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.amber.shade800,
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(bottom: 6),
-                              child: Text(
-                                ' / 10',
+                        Icon(Icons.star, color: Colors.amber, size: 32),
+                        SizedBox(width: 12),
+                        Flexible(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Moyenne de Satisfaction',
                                 style: GoogleFonts.sora(
-                                  fontSize: 18,
-                                  color: Colors.grey.shade600,
+                                  fontSize: 14,
+                                  color: Colors.grey.shade700,
                                 ),
                               ),
-                            ),
-                          ],
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    _averageSatisfaction.toStringAsFixed(1),
+                                    style: GoogleFonts.sora(
+                                      fontSize: 36,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.amber.shade800,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(bottom: 6),
+                                    child: Text(
+                                      ' / 10',
+                                      style: GoogleFonts.sora(
+                                        fontSize: 18,
+                                        color: Colors.grey.shade600,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
-                    SizedBox(width: 20),
+                    SizedBox(height: 12),
                     // Visual stars
-                    Column(
-                      children: [
-                        Row(
-                          children: List.generate(5, (index) {
-                            double threshold = (index + 1) * 2;
-                            return Icon(
-                              _averageSatisfaction >= threshold
-                                  ? Icons.star
-                                  : _averageSatisfaction >= threshold - 1
-                                  ? Icons.star_half
-                                  : Icons.star_border,
-                              color: Colors.amber,
-                              size: 24,
-                            );
-                          }),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          'Sur $_totalContacts contacts',
-                          style: GoogleFonts.sora(
-                            fontSize: 10,
-                            color: Colors.grey.shade600,
-                          ),
-                        ),
-                      ],
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(5, (index) {
+                        double threshold = (index + 1) * 2;
+                        return Icon(
+                          _averageSatisfaction >= threshold
+                              ? Icons.star
+                              : _averageSatisfaction >= threshold - 1
+                              ? Icons.star_half
+                              : Icons.star_border,
+                          color: Colors.amber,
+                          size: 24,
+                        );
+                      }),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'Sur $_totalContacts contacts',
+                      style: GoogleFonts.sora(
+                        fontSize: 10,
+                        color: Colors.grey.shade600,
+                      ),
                     ),
                   ],
                 ),
