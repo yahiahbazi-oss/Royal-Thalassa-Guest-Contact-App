@@ -851,97 +851,99 @@ class _TableauDeBordPageState extends State<TableauDeBordPage> {
                     child: Center(child: CircularProgressIndicator()),
                   )
                 : _totalQualifications == 0
-                    ? Container(
-                        height: 150,
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.pie_chart_outline,
-                                size: 60,
-                                color: Colors.grey,
-                              ),
-                              SizedBox(height: 12),
-                              Text(
-                                'Aucune donnée pour cette période',
-                                style: GoogleFonts.sora(
-                                  fontSize: 14,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
+                ? Container(
+                    height: 150,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.pie_chart_outline,
+                            size: 60,
+                            color: Colors.grey,
+                          ),
+                          SizedBox(height: 12),
+                          Text(
+                            'Aucune donnée pour cette période',
+                            style: GoogleFonts.sora(
+                              fontSize: 14,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                : Container(
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        // Custom Pie Chart
+                        Container(
+                          height: 200,
+                          width: 200,
+                          child: CustomPaint(
+                            painter: PieChartPainter(
+                              data: _resultatsDistribution,
+                              colors: _resultatsColors,
+                              total: _totalQualifications,
+                            ),
                           ),
                         ),
-                      )
-                    : Container(
-                        padding: EdgeInsets.all(16),
-                        child: Column(
-                          children: [
-                            // Custom Pie Chart
-                            Container(
-                              height: 200,
-                              width: 200,
-                              child: CustomPaint(
-                                painter: PieChartPainter(
-                                  data: _resultatsDistribution,
-                                  colors: _resultatsColors,
-                                  total: _totalQualifications,
+                        SizedBox(height: 24),
+                        // Legend
+                        Wrap(
+                          spacing: 16,
+                          runSpacing: 12,
+                          alignment: WrapAlignment.center,
+                          children: _resultatsAppelOptions.map((option) {
+                            int count = _resultatsDistribution[option] ?? 0;
+                            if (count == 0) return SizedBox.shrink();
+                            double percentage =
+                                (count / _totalQualifications) * 100;
+                            return Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: _resultatsColors[option]!.withOpacity(
+                                  0.1,
+                                ),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: _resultatsColors[option]!.withOpacity(
+                                    0.5,
+                                  ),
                                 ),
                               ),
-                            ),
-                            SizedBox(height: 24),
-                            // Legend
-                            Wrap(
-                              spacing: 16,
-                              runSpacing: 12,
-                              alignment: WrapAlignment.center,
-                              children: _resultatsAppelOptions.map((option) {
-                                int count = _resultatsDistribution[option] ?? 0;
-                                if (count == 0) return SizedBox.shrink();
-                                double percentage =
-                                    (count / _totalQualifications) * 100;
-                                return Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 6,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: _resultatsColors[option]!
-                                        .withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(20),
-                                    border: Border.all(
-                                      color: _resultatsColors[option]!
-                                          .withOpacity(0.5),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    width: 12,
+                                    height: 12,
+                                    decoration: BoxDecoration(
+                                      color: _resultatsColors[option],
+                                      shape: BoxShape.circle,
                                     ),
                                   ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Container(
-                                        width: 12,
-                                        height: 12,
-                                        decoration: BoxDecoration(
-                                          color: _resultatsColors[option],
-                                          shape: BoxShape.circle,
-                                        ),
-                                      ),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        '$option: $count (${percentage.toStringAsFixed(1)}%)',
-                                        style: GoogleFonts.sora(
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
+                                  SizedBox(width: 8),
+                                  Text(
+                                    '$option: $count (${percentage.toStringAsFixed(1)}%)',
+                                    style: GoogleFonts.sora(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
-                                );
-                              }).toList(),
-                            ),
-                          ],
+                                ],
+                              ),
+                            );
+                          }).toList(),
                         ),
-                      ),
+                      ],
+                    ),
+                  ),
 
             SizedBox(height: 20),
 
@@ -1032,8 +1034,8 @@ class _TableauDeBordPageState extends State<TableauDeBordPage> {
                               _averageSatisfaction >= threshold
                                   ? Icons.star
                                   : _averageSatisfaction >= threshold - 1
-                                      ? Icons.star_half
-                                      : Icons.star_border,
+                                  ? Icons.star_half
+                                  : Icons.star_border,
                               color: Colors.amber,
                               size: 24,
                             );
@@ -1060,30 +1062,26 @@ class _TableauDeBordPageState extends State<TableauDeBordPage> {
                     child: Center(child: CircularProgressIndicator()),
                   )
                 : _totalContacts == 0
-                    ? Container(
-                        height: 150,
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.bar_chart,
-                                size: 60,
-                                color: Colors.grey,
-                              ),
-                              SizedBox(height: 12),
-                              Text(
-                                'Aucune donnée pour cette période',
-                                style: GoogleFonts.sora(
-                                  fontSize: 14,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
+                ? Container(
+                    height: 150,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.bar_chart, size: 60, color: Colors.grey),
+                          SizedBox(height: 12),
+                          Text(
+                            'Aucune donnée pour cette période',
+                            style: GoogleFonts.sora(
+                              fontSize: 14,
+                              color: Colors.grey,
+                            ),
                           ),
-                        ),
-                      )
-                    : _buildSatisfactionChart(),
+                        ],
+                      ),
+                    ),
+                  )
+                : _buildSatisfactionChart(),
 
             SizedBox(height: 20),
           ],
@@ -1143,10 +1141,7 @@ class _TableauDeBordPageState extends State<TableauDeBordPage> {
                             gradient: LinearGradient(
                               begin: Alignment.bottomCenter,
                               end: Alignment.topCenter,
-                              colors: [
-                                barColor.withOpacity(0.8),
-                                barColor,
-                              ],
+                              colors: [barColor.withOpacity(0.8), barColor],
                             ),
                             borderRadius: BorderRadius.vertical(
                               top: Radius.circular(6),
@@ -1344,8 +1339,7 @@ class PieChartPainter extends CustomPainter {
 
     double startAngle = -math.pi / 2; // Start from top
 
-    final paint = Paint()
-      ..style = PaintingStyle.fill;
+    final paint = Paint()..style = PaintingStyle.fill;
 
     data.forEach((key, value) {
       if (value > 0) {

@@ -83,6 +83,7 @@ class _HomepageState extends State<Homepage> {
           fullName.contains(query);
     }).toList();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
