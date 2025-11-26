@@ -121,7 +121,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     _selectedNationalite = widget.currentFilter.nationaliteValue;
     _selectedCanal = widget.currentFilter.canalReservationValue;
     _selectedStatutAppel = widget.currentFilter.statutAppelValue;
-    _selectedDegreSatisfaction = widget.currentFilter.degreSatisfactionValue ?? 5;
+    _selectedDegreSatisfaction =
+        widget.currentFilter.degreSatisfactionValue ?? 5;
   }
 
   Widget _buildFilterOption({
@@ -404,7 +405,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
 
                   // Degré de satisfaction
                   Card(
-                    elevation: _selectedFilterType == FilterType.degreSatisfaction
+                    elevation:
+                        _selectedFilterType == FilterType.degreSatisfaction
                         ? 2
                         : 0,
                     color: _selectedFilterType == FilterType.degreSatisfaction
@@ -419,7 +421,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                             children: [
                               Icon(
                                 Icons.star,
-                                color: _selectedFilterType == FilterType.degreSatisfaction
+                                color:
+                                    _selectedFilterType ==
+                                        FilterType.degreSatisfaction
                                     ? Colors.amber
                                     : Colors.grey,
                               ),
@@ -428,17 +432,23 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                                 'Degré de satisfaction',
                                 style: GoogleFonts.sora(
                                   fontWeight:
-                                      _selectedFilterType == FilterType.degreSatisfaction
+                                      _selectedFilterType ==
+                                          FilterType.degreSatisfaction
                                       ? FontWeight.bold
                                       : FontWeight.normal,
-                                  color: _selectedFilterType == FilterType.degreSatisfaction
+                                  color:
+                                      _selectedFilterType ==
+                                          FilterType.degreSatisfaction
                                       ? Colors.blue
                                       : null,
                                 ),
                               ),
                               Spacer(),
                               Container(
-                                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 4,
+                                ),
                                 decoration: BoxDecoration(
                                   color: Colors.amber.shade100,
                                   borderRadius: BorderRadius.circular(16),
@@ -456,7 +466,13 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                           SizedBox(height: 8),
                           Row(
                             children: [
-                              Text('0', style: GoogleFonts.sora(fontSize: 12, color: Colors.grey)),
+                              Text(
+                                '0',
+                                style: GoogleFonts.sora(
+                                  fontSize: 12,
+                                  color: Colors.grey,
+                                ),
+                              ),
                               Expanded(
                                 child: Slider(
                                   value: _selectedDegreSatisfaction.toDouble(),
@@ -467,13 +483,21 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                                   label: _selectedDegreSatisfaction.toString(),
                                   onChanged: (value) {
                                     setState(() {
-                                      _selectedDegreSatisfaction = value.toInt();
-                                      _selectedFilterType = FilterType.degreSatisfaction;
+                                      _selectedDegreSatisfaction = value
+                                          .toInt();
+                                      _selectedFilterType =
+                                          FilterType.degreSatisfaction;
                                     });
                                   },
                                 ),
                               ),
-                              Text('10', style: GoogleFonts.sora(fontSize: 12, color: Colors.grey)),
+                              Text(
+                                '10',
+                                style: GoogleFonts.sora(
+                                  fontSize: 12,
+                                  color: Colors.grey,
+                                ),
+                              ),
                             ],
                           ),
                           // Star indicators

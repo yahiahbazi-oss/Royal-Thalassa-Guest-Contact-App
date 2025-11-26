@@ -104,6 +104,11 @@ class CrudServices {
     return contactsCollection.snapshots();
   }
 
+  // Get all contacts as a single snapshot (for dashboard)
+  Future<QuerySnapshot> getContactsSnapshot() {
+    return contactsCollection.get();
+  }
+
   // Check if phone number already exists
   Future<bool> checkPhoneNumberExists(String phoneNumber) async {
     try {
@@ -111,7 +116,7 @@ class CrudServices {
       QuerySnapshot telephoneQuery = await contactsCollection
           .where('telephone', isEqualTo: phoneNumber)
           .get();
-      
+
       if (telephoneQuery.docs.isNotEmpty) {
         return true;
       }
@@ -120,7 +125,7 @@ class CrudServices {
       QuerySnapshot whatsappQuery = await contactsCollection
           .where('whatsapp', isEqualTo: phoneNumber)
           .get();
-      
+
       if (whatsappQuery.docs.isNotEmpty) {
         return true;
       }
@@ -129,7 +134,7 @@ class CrudServices {
       QuerySnapshot fixeQuery = await contactsCollection
           .where('telephoneFixe', isEqualTo: phoneNumber)
           .get();
-      
+
       if (fixeQuery.docs.isNotEmpty) {
         return true;
       }
@@ -138,7 +143,7 @@ class CrudServices {
       QuerySnapshot autreQuery = await contactsCollection
           .where('autreNumero', isEqualTo: phoneNumber)
           .get();
-      
+
       if (autreQuery.docs.isNotEmpty) {
         return true;
       }

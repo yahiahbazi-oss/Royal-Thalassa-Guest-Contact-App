@@ -6,6 +6,7 @@ import '../controllers/crud_services.dart';
 import '../models/contact_filter.dart';
 import '../widgets/filter_bottom_sheet.dart';
 import 'contact_details_page.dart';
+import 'tableau_de_bord_page.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -82,7 +83,6 @@ class _HomepageState extends State<Homepage> {
           fullName.contains(query);
     }).toList();
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,6 +92,22 @@ class _HomepageState extends State<Homepage> {
         foregroundColor: Colors.white,
         iconTheme: IconThemeData(color: Colors.white),
         actions: [
+          // Tableau de Bord button
+          TextButton.icon(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const TableauDeBordPage(),
+                ),
+              );
+            },
+            icon: Icon(Icons.dashboard, color: Colors.white, size: 20),
+            label: Text(
+              'Tableau de Bord',
+              style: GoogleFonts.sora(color: Colors.white, fontSize: 12),
+            ),
+          ),
           // Filter button
           IconButton(
             icon: Stack(
