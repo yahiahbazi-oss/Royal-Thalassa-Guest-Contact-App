@@ -232,6 +232,37 @@ class _AddContactPageState extends State<AddContactPage> {
         return;
       }
 
+      // Check for duplicate phone numbers
+      List<String> phoneNumbersToCheck = [];
+      if (_telephoneController.text.isNotEmpty) {
+        phoneNumbersToCheck.add(_telephoneController.text.trim());
+      }
+      if (_whatsappController.text.isNotEmpty) {
+        phoneNumbersToCheck.add(_whatsappController.text.trim());
+      }
+      if (_telephoneFixeController.text.isNotEmpty) {
+        phoneNumbersToCheck.add(_telephoneFixeController.text.trim());
+      }
+      if (_autreNumeroController.text.isNotEmpty) {
+        phoneNumbersToCheck.add(_autreNumeroController.text.trim());
+      }
+
+      for (String phoneNumber in phoneNumbersToCheck) {
+        bool exists = await _crudServices.checkPhoneNumberExists(phoneNumber);
+        if (exists) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Contact déjà existe avec le numéro "$phoneNumber", veuillez vérifier',
+              ),
+              backgroundColor: Colors.orange,
+              duration: const Duration(seconds: 4),
+            ),
+          );
+          return;
+        }
+      }
+
       String result = await _crudServices.addNewContact(
         nom: _nomController.text,
         prenom: _prenomController.text,

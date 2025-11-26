@@ -571,14 +571,18 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      items: ['Non appelé', ..._resultatsAppelOptions].map((status) {
+                      items: ['Non appelé', ..._resultatsAppelOptions].map((
+                        status,
+                      ) {
                         return DropdownMenuItem(
                           value: status,
                           child: Text(status, style: GoogleFonts.sora()),
                         );
                       }).toList(),
                       onChanged: (value) {
-                        setDialogState(() => _newStatutAppel = value ?? 'Non appelé');
+                        setDialogState(
+                          () => _newStatutAppel = value ?? 'Non appelé',
+                        );
                       },
                     ),
                   ],
@@ -983,7 +987,10 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
                 ElevatedButton.icon(
                   onPressed: _showNouveauSejourDialog,
                   icon: Icon(Icons.add, size: 18),
-                  label: Text('Nouveau séjour', style: GoogleFonts.sora(fontSize: 12)),
+                  label: Text(
+                    'Nouveau séjour',
+                    style: GoogleFonts.sora(fontSize: 12),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.orange,
                     foregroundColor: Colors.white,
@@ -1033,21 +1040,22 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
             ),
 
             // Previous séjours history
-            if ((contactData['sejoursHistory'] as List?)?.isNotEmpty ?? false) ...[
+            if ((contactData['sejoursHistory'] as List?)?.isNotEmpty ??
+                false) ...[
               SizedBox(height: 16),
               _buildSectionTitle('Historique des Séjours'),
-              ...List.generate(
-                (contactData['sejoursHistory'] as List).length,
-                (index) {
-                  int reverseIndex = (contactData['sejoursHistory'] as List).length - 1 - index;
-                  return _buildSejourHistoryCard(
-                    Map<String, dynamic>.from(
-                      (contactData['sejoursHistory'] as List)[reverseIndex],
-                    ),
-                    reverseIndex,
-                  );
-                },
-              ),
+              ...List.generate((contactData['sejoursHistory'] as List).length, (
+                index,
+              ) {
+                int reverseIndex =
+                    (contactData['sejoursHistory'] as List).length - 1 - index;
+                return _buildSejourHistoryCard(
+                  Map<String, dynamic>.from(
+                    (contactData['sejoursHistory'] as List)[reverseIndex],
+                  ),
+                  reverseIndex,
+                );
+              }),
             ],
 
             Divider(),

@@ -2,7 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum SortOrder { ascending, descending }
 
-enum FilterType { nationalite, nomPrenom, canalReservation, statutAppel, none }
+enum FilterType {
+  nationalite,
+  nomPrenom,
+  canalReservation,
+  statutAppel,
+  degreSatisfaction,
+  none,
+}
 
 class ContactFilter {
   final FilterType filterType;
@@ -10,6 +17,7 @@ class ContactFilter {
   final String? nationaliteValue;
   final String? canalReservationValue;
   final String? statutAppelValue;
+  final int? degreSatisfactionValue;
 
   ContactFilter({
     this.filterType = FilterType.none,
@@ -17,6 +25,7 @@ class ContactFilter {
     this.nationaliteValue,
     this.canalReservationValue,
     this.statutAppelValue,
+    this.degreSatisfactionValue,
   });
 
   ContactFilter copyWith({
@@ -25,6 +34,7 @@ class ContactFilter {
     String? nationaliteValue,
     String? canalReservationValue,
     String? statutAppelValue,
+    int? degreSatisfactionValue,
   }) {
     return ContactFilter(
       filterType: filterType ?? this.filterType,
@@ -33,6 +43,8 @@ class ContactFilter {
       canalReservationValue:
           canalReservationValue ?? this.canalReservationValue,
       statutAppelValue: statutAppelValue ?? this.statutAppelValue,
+      degreSatisfactionValue:
+          degreSatisfactionValue ?? this.degreSatisfactionValue,
     );
   }
 
@@ -66,6 +78,15 @@ class ContactFilter {
           filteredDocs = filteredDocs.where((doc) {
             Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
             return data['canalReservation'] == canalReservationValue;
+          }).toList();
+        }
+        break;
+
+      case FilterType.degreSatisfaction:
+        if (degreSatisfactionValue != null) {
+          filteredDocs = filteredDocs.where((doc) {
+            Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+            return data['degreSatisfaction'] == degreSatisfactionValue;
           }).toList();
         }
         break;
@@ -106,6 +127,12 @@ class ContactFilter {
           comparison = canalA.compareTo(canalB);
           break;
 
+        case FilterType.degreSatisfaction:
+          int satisfactionA = (dataA['degreSatisfaction'] ?? 0) as int;
+          int satisfactionB = (dataB['degreSatisfaction'] ?? 0) as int;
+          comparison = satisfactionA.compareTo(satisfactionB);
+          break;
+
         default:
           // Default sort by creation date
           Timestamp? dateA = dataA['dateCreation'] as Timestamp?;
@@ -131,6 +158,8 @@ class ContactFilter {
         return canalReservationValue ?? "Canal de réservation";
       case FilterType.statutAppel:
         return statutAppelValue ?? "Statut d'appel";
+      case FilterType.degreSatisfaction:
+        return "Satisfaction: ${degreSatisfactionValue ?? 0}/10";
       case FilterType.none:
         return "Aucun filtre";
     }

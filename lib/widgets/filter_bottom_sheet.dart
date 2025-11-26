@@ -17,6 +17,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   String? _selectedNationalite;
   String? _selectedCanal;
   String? _selectedStatutAppel;
+  int _selectedDegreSatisfaction = 5;
 
   // Predefined nationalities list
   final List<String> _nationalites = [
@@ -120,6 +121,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     _selectedNationalite = widget.currentFilter.nationaliteValue;
     _selectedCanal = widget.currentFilter.canalReservationValue;
     _selectedStatutAppel = widget.currentFilter.statutAppelValue;
+    _selectedDegreSatisfaction = widget.currentFilter.degreSatisfactionValue ?? 5;
   }
 
   Widget _buildFilterOption({
@@ -399,6 +401,99 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       ),
                     ),
                   ),
+
+                  // Degré de satisfaction
+                  Card(
+                    elevation: _selectedFilterType == FilterType.degreSatisfaction
+                        ? 2
+                        : 0,
+                    color: _selectedFilterType == FilterType.degreSatisfaction
+                        ? Colors.blue.shade50
+                        : null,
+                    child: Padding(
+                      padding: EdgeInsets.all(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.star,
+                                color: _selectedFilterType == FilterType.degreSatisfaction
+                                    ? Colors.amber
+                                    : Colors.grey,
+                              ),
+                              SizedBox(width: 12),
+                              Text(
+                                'Degré de satisfaction',
+                                style: GoogleFonts.sora(
+                                  fontWeight:
+                                      _selectedFilterType == FilterType.degreSatisfaction
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                  color: _selectedFilterType == FilterType.degreSatisfaction
+                                      ? Colors.blue
+                                      : null,
+                                ),
+                              ),
+                              Spacer(),
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.amber.shade100,
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Text(
+                                  '$_selectedDegreSatisfaction/10',
+                                  style: GoogleFonts.sora(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.amber.shade800,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Text('0', style: GoogleFonts.sora(fontSize: 12, color: Colors.grey)),
+                              Expanded(
+                                child: Slider(
+                                  value: _selectedDegreSatisfaction.toDouble(),
+                                  min: 0,
+                                  max: 10,
+                                  divisions: 10,
+                                  activeColor: Colors.amber,
+                                  label: _selectedDegreSatisfaction.toString(),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _selectedDegreSatisfaction = value.toInt();
+                                      _selectedFilterType = FilterType.degreSatisfaction;
+                                    });
+                                  },
+                                ),
+                              ),
+                              Text('10', style: GoogleFonts.sora(fontSize: 12, color: Colors.grey)),
+                            ],
+                          ),
+                          // Star indicators
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(
+                              10,
+                              (index) => Icon(
+                                Icons.star,
+                                size: 20,
+                                color: index < _selectedDegreSatisfaction
+                                    ? Colors.amber
+                                    : Colors.grey.shade300,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -432,6 +527,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       nationaliteValue: _selectedNationalite,
                       canalReservationValue: _selectedCanal,
                       statutAppelValue: _selectedStatutAppel,
+                      degreSatisfactionValue: _selectedDegreSatisfaction,
                     );
                     Navigator.pop(context, newFilter);
                   },

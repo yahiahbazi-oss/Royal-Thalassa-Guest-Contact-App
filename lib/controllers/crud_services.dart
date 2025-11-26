@@ -104,6 +104,51 @@ class CrudServices {
     return contactsCollection.snapshots();
   }
 
+  // Check if phone number already exists
+  Future<bool> checkPhoneNumberExists(String phoneNumber) async {
+    try {
+      // Check in telephone field
+      QuerySnapshot telephoneQuery = await contactsCollection
+          .where('telephone', isEqualTo: phoneNumber)
+          .get();
+      
+      if (telephoneQuery.docs.isNotEmpty) {
+        return true;
+      }
+
+      // Check in whatsapp field
+      QuerySnapshot whatsappQuery = await contactsCollection
+          .where('whatsapp', isEqualTo: phoneNumber)
+          .get();
+      
+      if (whatsappQuery.docs.isNotEmpty) {
+        return true;
+      }
+
+      // Check in telephoneFixe field
+      QuerySnapshot fixeQuery = await contactsCollection
+          .where('telephoneFixe', isEqualTo: phoneNumber)
+          .get();
+      
+      if (fixeQuery.docs.isNotEmpty) {
+        return true;
+      }
+
+      // Check in autreNumero field
+      QuerySnapshot autreQuery = await contactsCollection
+          .where('autreNumero', isEqualTo: phoneNumber)
+          .get();
+      
+      if (autreQuery.docs.isNotEmpty) {
+        return true;
+      }
+
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
   // Update call result for a contact
   Future<String> updateResultatAppel({
     required String documentId,
